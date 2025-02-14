@@ -1,0 +1,1781 @@
+Version 1
+SubGoalCombiner SGC_AND
+INITSECTION
+
+KBSECTION
+// --------------------------------------------------
+// QRY Check for Dead Character with Empty Inventory
+// --------------------------------------------------
+QRY
+QRY_IsCorpseOrContainer((GUIDSTRING)_Entity)
+AND
+IsCharacter((CHARACTER)_Entity, 1)
+AND
+IsDead((CHARACTER)_Entity, 1)
+AND
+IsInventoryEmpty((CHARACTER)_Entity, 1)
+AND
+DB_TAG_IsInventoryEmpty(_InventoryEmptyTag)
+AND
+DB_TAG_IsCorpse(_CorpseTag)
+THEN
+SetTag(_Entity, _InventoryEmptyTag);
+SetTag(_Entity, _CorpseTag);
+PROC_Play_Yellow_Circle_Effect((GUIDSTRING)_Entity);
+// --------------------------------------------
+
+
+// ------------------------------------------------------
+// QRY Check for Dead Character with Non-Empty Inventory
+// ------------------------------------------------------
+QRY
+QRY_IsCorpseOrContainer((GUIDSTRING)_Entity)
+AND
+IsCharacter((CHARACTER)_Entity, 1)
+AND
+IsDead((CHARACTER)_Entity, 1)
+AND
+NOT IsInventoryEmpty((CHARACTER)_Entity, 1)
+AND
+DB_TAG_IsCorpse(_CorpseTag)
+THEN
+SetTag(_Entity, _CorpseTag);
+SetCharacterLootable((CHARACTER)_Entity, 1);
+// --------------------------------------------
+
+
+// ------------------------------
+// QRY Check for Empty Container
+// ------------------------------
+QRY
+QRY_IsCorpseOrContainer((GUIDSTRING)_Entity)
+AND
+IsItem((ITEM)_Entity, 1)
+AND
+IsContainer((ITEM)_Entity, 1)
+AND
+IsInventoryEmpty((ITEM)_Entity, 1)
+AND
+GetHostCharacter(_Character)
+AND
+DB_TAG_IsInventoryEmpty(_InventoryEmptyTag)
+AND
+DB_TAG_IsContainer(_ContainerTag)
+THEN
+SetTag(_Entity, _InventoryEmptyTag);
+SetTag(_Entity, _ContainerTag);
+PROC_Play_Yellow_Circle_Effect((GUIDSTRING)_Entity);
+DebugText(_Character,"Is container empty");
+// -------------------------------------------
+
+
+// ----------------------------------------
+// QRY Check for Non-Empty Container
+// ----------------------------------------
+QRY
+QRY_IsCorpseOrContainer((GUIDSTRING)_Entity)
+AND
+IsItem((ITEM)_Entity, 1)
+AND
+IsContainer((ITEM)_Entity, 1)
+AND
+NOT IsInventoryEmpty((ITEM)_Entity, 1)
+AND
+GetHostCharacter(_Character)
+AND
+DB_TAG_IsContainer(_ContainerTag)
+THEN
+SetTag(_Entity, _ContainerTag);
+DebugText(_Character,"IsContainer Tag");
+// -------------------------------------------
+
+
+
+// ------------------------------
+// PROC_Play_Green_Circle_Effect
+// -------------------------------
+PROC
+PROC_Play_Green_Circle_Effect((GUIDSTRING)_Object)
+AND
+DB_Green_Circle_Effect(_Effect)
+AND
+GetPosition(_Object, _X, _Y, _Z)
+AND
+PlayLoopEffectAtPosition((EFFECTRESOURCE)_Effect, _X, _Y, _Z, 1.0, _)
+THEN
+DB_Noop(1);
+// -------------------------------------------------------------------------
+
+// ------------------------------
+// PROC_Play_Yellow_Circle_Effect
+// -------------------------------
+PROC
+PROC_Play_Yellow_Circle_Effect((GUIDSTRING)_Object)
+AND
+DB_Yellow_Circle_Effect(_Effect)
+AND
+GetPosition(_Object, _X, _Y, _Z)
+AND
+PlayLoopEffectAtPosition((EFFECTRESOURCE)_Effect, _X, _Y, _Z, 1.0, _)
+THEN
+DB_Noop(1);
+// -------------------------------------------------------------------------
+
+
+// ----------------------------------------
+// QRY: Check If Trap Needs Disarming
+// ----------------------------------------
+QRY
+QRY_ShouldDisarm((GUIDSTRING)_Object)
+AND
+IsContainer((ITEM)_Object, 1)
+AND
+IsTrapArmed((ITEM)_Object, 1)
+THEN
+DB_Noop(1);
+
+// ----------------------------------------
+// QRY: Check If Object Needs Unlocking
+// ----------------------------------------
+QRY
+QRY_ShouldUnlock((GUIDSTRING)_Object)
+AND
+IsContainer((ITEM)_Object, 1)
+AND
+IsLocked((ITEM)_Object, 1)
+THEN
+DB_Noop(1);
+
+// ----------------------------------------
+// QRY: Check If Object Can Be Opened
+// ----------------------------------------
+QRY
+QRY_ShouldOpen((GUIDSTRING)_Object)
+AND
+IsContainer((ITEM)_Object, 1)
+AND
+NOT IsLocked((ITEM)_Object, 1)    // Must be unlocked
+AND
+NOT IsTrapArmed((ITEM)_Object, 1) // Must be safe
+THEN
+DB_Noop(1);
+// ----------------------------------------
+
+
+
+
+
+
+
+
+
+
+// ----------------------------------------
+// PROC: Disarm Trap (If Needed)
+// ----------------------------------------
+PROC
+PROC_DisarmUnlockOpen((GUIDSTRING)_Object)
+AND
+QRY_ShouldDisarm((GUIDSTRING)_Object)
+THEN
+SetTrapDiscovered((ITEM)_Object, 1);  // Mark trap as discovered
+SetTrapArmed((ITEM)_Object, 0);       // Disarm trap
+ApplyStatus((ITEM)_Object, "TRAP_DISARMED", 1.0);
+// ----------------------------------------
+
+// ----------------------------------------
+// PROC: Unlock Object (If Needed)
+// ----------------------------------------
+PROC
+PROC_DisarmUnlockOpen((GUIDSTRING)_Object)
+AND
+QRY_ShouldUnlock((GUIDSTRING)_Object)
+THEN
+Unlock((ITEM)_Object);
+ApplyStatus((ITEM)_Object, "CONTAINER_UNLOCKED", 1.0);
+// ----------------------------------------
+
+// ----------------------------------------
+// PROC: Open Object (If Safe)
+// ----------------------------------------
+PROC
+PROC_DisarmUnlockOpen((GUIDSTRING)_Object)
+AND
+QRY_ShouldOpen((GUIDSTRING)_Object)
+THEN
+Open((ITEM)_Object);
+// ----------------------------------------
+
+
+
+// ---------------------------
+// LevelLoaded initialize DB
+// ---------------------------
+IF
+LevelLoaded((STRING)_NewLevel)
+AND
+_NewLevel != "SYS_CC_I"
+THEN
+// Backpacks
+SysClear("DB_LootMasterBackpack_Template",1);
+DB_LootMasterBackpack_Template(LOOT_GEN_LootMaster_Backpack_4fa55d91-7dc9-4f32-9400-909cbe646fee);
+SysClear("DB_LootMaster_Rares_Backpack_Template",1);
+DB_LootMaster_Rares_Backpack_Template(LOOT_GEN_LootMaster_Rares_Backpack_69d518d3-34ca-4471-ac55-20cf11ed55d4);
+// Effects
+SysClear("DB_Green_Circle_Effect",1);
+SysClear("DB_Yellow_Circle_Effect",1);
+DB_Green_Circle_Effect(LootMasterLootedEffect_01_2af4dec0-2f06-61e9-6f49-9bac85fadfd0);
+DB_Yellow_Circle_Effect(LootMasterLootedEffect_02_f837056a-b8e4-ffb9-b633-8d3e92c7d0a1);
+// Tags
+SysClear("DB_TAG_IsContainer",1);
+DB_TAG_IsContainer((TAG)IS_CONTAINER_86adb16b-1ba9-44df-a1bc-633c4842048f);
+SysClear("DB_TAG_IsCorpse",1);
+DB_TAG_IsCorpse((TAG)IS_CORPSE_838ee752-6f4b-42b9-8461-971693fadcc2);
+SysClear("DB_TAG_IsInventoryEmpty",1);
+DB_TAG_IsInventoryEmpty((TAG)IS_INVENTORY_EMPTY_04a24ef6-6076-4285-a88f-44bcc4c6c3c1);
+// messages
+SysClear("DB_LootMaster_Message1",1);
+DB_LootMaster_Message1("Do you want to remove this mod?<br>If you choose 'Remove', the mod will be prepared for uninstallation.<br>Warning: The backpack and its contents will be lost.");
+SysClear("DB_LootMaster_Message2",1);
+DB_LootMaster_Message2("The mod is ready to be uninstalled.<br>Exit the game before disabling or uninstalling the mod.<br>Your progress has been automatically saved.<br>If you reload the last save, the mod will be reactivated.");
+// Lootes Items DB
+SysClear("DB_Looted_InventoryItems",2);
+// All Rare Items sorted 1-Uncommon, 2-Rare, 3-VeryRare, 4-legendary
+SysClear("DB_Rare_Items",1);
+DB_Rare_Items("WPN_Dagger_1");
+DB_Rare_Items("WPN_Tower_AutomatonHalberd");
+DB_Rare_Items("UND_Tower_StaffBlessMystra");
+DB_Rare_Items("UND_StrengthChair_Leg");
+DB_Rare_Items("UND_DuergarRaft_GruesomeHammer");
+DB_Rare_Items("UND_DuergarRaft_PestKillerAxe");
+DB_Rare_Items("UND_Duergar_ShortswordOfFirstBlood");
+DB_Rare_Items("PLA_WPN_SwordOfJustice");
+DB_Rare_Items("Quest_HAG_HagLair_Staff");
+DB_Rare_Items("GOB_Pens_Dagger");
+DB_Rare_Items("GOB_Torturer_Spear");
+DB_Rare_Items("GOB_PainPriest_Handaxe");
+DB_Rare_Items("GOB_PainPriest_Scourge");
+DB_Rare_Items("GOB_PainPriest_Dagger");
+DB_Rare_Items("GOB_GoblinKing_Warhammer");
+DB_Rare_Items("GOB_DrowCommander_Mace");
+DB_Rare_Items("FOR_WebStaff");
+DB_Rare_Items("FOR_Village_Blacksmith_FineSword");
+DB_Rare_Items("MAG_ChargedLightning_StaticDischarge_Shield");
+DB_Rare_Items("MAG_ChargedLightning_LightningBlast_Amulet");
+DB_Rare_Items("MAG_ChargedLightning_Resistance_Ring");
+DB_Rare_Items("MAG_Bard_TempHP_Armor");
+DB_Rare_Items("MAG_Bard_HealingBardicInspiration_Hat");
+DB_Rare_Items("MAG_Paladin_LayOnHandsSupport_Gloves");
+DB_Rare_Items("UND_DuergarBlacksmithHammer");
+DB_Rare_Items("MAG_Paladin_MomentumOnConcentration_Boots");
+DB_Rare_Items("HAG_InspirationAmulet");
+DB_Rare_Items("CHA_CompassSpear");
+DB_Rare_Items("DEN_Apprentice_DaggerOfShar");
+DB_Rare_Items("DEN_TunnelStaff");
+DB_Rare_Items("DEN_CapturedGoblin_MurderDagger");
+DB_Rare_Items("FOR_TrueSoul_Spear");
+DB_Rare_Items("MAG_Paladin_SmiteSpellsSupport_Helmet");
+DB_Rare_Items("MAG_ChargedLightning_TempHP_Helmet");
+DB_Rare_Items("UND_Nere_Sword");
+DB_Rare_Items("UND_KC_Elder_Warpick");
+DB_Rare_Items("MAG_Frost_IceSurfaceProneImmunity_Boots");
+DB_Rare_Items("MAG_Frost_GenerateFrostOnDamage_Gloves");
+DB_Rare_Items("MAG_Frost_GenerateFrostOnStatusApply_Hat");
+DB_Rare_Items("UNI_GLO_Orin_TeleportRing");
+DB_Rare_Items("LOW_GuildRing");
+DB_Rare_Items("SHA_SandthiefsRing");
+DB_Rare_Items("MAG_JusticiarArmor_Gloves");
+DB_Rare_Items("TWN_ShieldOfWatcher");
+DB_Rare_Items("TWN_Tollhouse_TradersRing");
+DB_Rare_Items("TWN_NecklaceOfCharming");
+DB_Rare_Items("TWN_RegretfulHunter_SoulAmulet");
+DB_Rare_Items("TWN_TollCollector_ArmorPart_Leg_R");
+DB_Rare_Items("TWN_TollCollector_ArmorPart_Leg_L");
+DB_Rare_Items("TWN_TollCollector_ArmorPart_Torso");
+DB_Rare_Items("TWN_TollCollector_ArmorPart_Arm_R");
+DB_Rare_Items("TWN_TollCollector_ArmorPart_Arm_L");
+DB_Rare_Items("TWN_TollCollector_ArmorPart_Head");
+DB_Rare_Items("UNI_SuperheavyWeapon");
+DB_Rare_Items("UNI_DoomHammer");
+DB_Rare_Items("UNI_Bow_SpellslotRecharge");
+DB_Rare_Items("UNI_RepeatStaff");
+DB_Rare_Items("MAG_LowHP_IncreaseDamagePsychic_GithShortsword");
+DB_Rare_Items("MAG_LowHP_IncreaseDamagePsychic_GithLongsword");
+DB_Rare_Items("UND_SharranCrossbow");
+DB_Rare_Items("MAG_LowHP_IncreaseDamagePsychic_GithGreatsword");
+DB_Rare_Items("MAG_Fire_IncreaseSlashingDamageToBurning_Handaxe");
+DB_Rare_Items("MAG_Fire_IncreasePiercingDamageToBurning_HandCrossbow");
+DB_Rare_Items("MAG_Fire_AlwaysDippedInFire_Greatsword");
+DB_Rare_Items("MAG_Fire_BurningDamage_Longsword");
+DB_Rare_Items("MAG_Mobility_ExplosionOnJump_Maul");
+DB_Rare_Items("MAG_Mobility_MomentumOnAttack_Scimitar");
+DB_Rare_Items("MAG_LowHP_IncreaseDamagePsychic_GithHeavyCrossbow");
+DB_Rare_Items("MAG_Violence_LowHP_Violence_Clothes");
+DB_Rare_Items("MAG_Mobility_JumpOnDash_Gloves");
+DB_Rare_Items("MAG_Mobility_LowHP_Momentum_Ring");
+DB_Rare_Items("GOB_Pens_BeastmasterAmulet");
+DB_Rare_Items("GOB_DrowCommander_Amulet");
+DB_Rare_Items("GOB_Priest_Amulet");
+DB_Rare_Items("GOB_Priest_Shield");
+DB_Rare_Items("ARM_DrunkGoblinRing");
+DB_Rare_Items("UNI_GOB_SeluneAmulet");
+DB_Rare_Items("FOR_SpiderQueen_Robe");
+DB_Rare_Items("FOR_SpiderstepBoots");
+DB_Rare_Items("FOR_DeathOfATrueSoul_TrueSoul_Ring");
+DB_Rare_Items("FOR_OgresForHire_HeadbandOfIntellect");
+DB_Rare_Items("FOR_OwlbearCubs_Armor");
+DB_Rare_Items("UNI_Druid_Helmet_Circlet");
+DB_Rare_Items("DEN_HellridersPride");
+DB_Rare_Items("DEN_BearReward_Amulet");
+DB_Rare_Items("DEN_HarpyMeal_NestRing");
+DB_Rare_Items("DEN_Arabella_Locket");
+DB_Rare_Items("DEN_VoloOperation_ErsatzEye");
+DB_Rare_Items("ALCH_Solution_Grenade_SporesToxic");
+DB_Rare_Items("ALCH_Solution_Oil_AttackBuff");
+DB_Rare_Items("ALCH_Solution_Oil_DamageAttackBuff");
+DB_Rare_Items("ALCH_Solution_Oil_Reduce");
+DB_Rare_Items("ALCH_Solution_Oil_RemoveResistanceFire");
+DB_Rare_Items("ALCH_Solution_Oil_Wizardsbane");
+DB_Rare_Items("HAG_HagsRing");
+DB_Rare_Items("ALCH_Solution_Potion_Remedy");
+DB_Rare_Items("MAG_HAV_Sylvan_Scimitar");
+DB_Rare_Items("WPN_Katana");
+DB_Rare_Items("CRA_HermitCrab_Ring");
+DB_Rare_Items("CHA_OutpostJewelry");
+DB_Rare_Items("Quest_DEN_ARM_LuckyBoots");
+DB_Rare_Items("DEN_RaidingParty_GoblinCaptain_Gloves");
+DB_Rare_Items("WPN_SkullFlail_1");
+DB_Rare_Items("HAG_EyeballNecklace");
+DB_Rare_Items("ARM_HAG_Phylactery");
+DB_Rare_Items("PLA_SmugglerRing");
+DB_Rare_Items("MAG_LowHP_TemporaryHP_Shield");
+DB_Rare_Items("MAG_LowHP_IncreaseSpeed_Boots");
+DB_Rare_Items("MAG_LowHP_ResistanceFire_Gloves");
+DB_Rare_Items("MAG_LowHP_IgnoreAttackOfOpportunity_Amulet");
+DB_Rare_Items("MAG_LowHP_IncreasedSpellDamage_Amulet");
+DB_Rare_Items("MAG_Fire_IncreasedDamage_Ring");
+DB_Rare_Items("MAG_LowHP_CounterOnDamage_ChainShirt");
+DB_Rare_Items("MAG_Fire_ApplyBurningOnFireDamage_Gloves");
+DB_Rare_Items("MAG_Healer_HealSelf_Helmet");
+DB_Rare_Items("MAG_Healer_HealSelfPoisonWeapon_Amulet");
+DB_Rare_Items("MAG_Healer_TempHPOnHeal_Boots");
+DB_Rare_Items("MAG_Shove_ACboost_Ring");
+DB_Rare_Items("MAG_Rage_TempHPOnExit_Gloves");
+DB_Rare_Items("MAG_Mobility_SprintForMomentum_ChainShirt");
+DB_Rare_Items("MAG_Healer_DisengageOnHeal_ChainShirt");
+DB_Rare_Items("MAG_Frost_Frostbite_Amulet");
+DB_Rare_Items("UNI_MartyrAmulet");
+DB_Rare_Items("UND_KC_RingOfAbsolute");
+DB_Rare_Items("PLA_ZhentCave_Gloves");
+DB_Rare_Items("UND_Myco_Alchemist_HealerGloves");
+DB_Rare_Items("UND_MushroomHunger_RingOfExploration");
+DB_Rare_Items("UND_FairyRing_AntiCharmHelmet");
+DB_Rare_Items("UND_SocietyOfBrilliance_MagicMissileNecklace");
+DB_Rare_Items("UND_SocietyOfBrilliance_DarkvisionRing");
+DB_Rare_Items("UNI_MassHealRing");
+DB_Rare_Items("UND_SocietyOfBrilliance_PullingRing");
+DB_Rare_Items("UND_Tower_RingArcana");
+DB_Rare_Items("UND_Tower_RingLight");
+DB_Rare_Items("UND_Tower_BootsFeatherFall");
+DB_Rare_Items("UND_Justiciar_Mask_Magic");
+DB_Rare_Items("UND_Justiciar_Helmet_Magic");
+DB_Rare_Items("UND_Justiciar_Chainshirt_Magic");
+DB_Rare_Items("UND_Minotaur_BeltAmulet");
+DB_Rare_Items("ALCH_Solution_Grenade_SporesHaste");
+DB_Rare_Items("MAG_Frost_GenerateSurfaceOnColdDamage_Ring");
+DB_Rare_Items("MAG_ElementalGish_ArcaneAcuity_Helmet");
+DB_Rare_Items("WPN_ShadowBlade");
+DB_Rare_Items("HAV_SpearOfSelune");
+DB_Rare_Items("TWN_SharDagger");
+DB_Rare_Items("MOO_WulbrenHammer");
+DB_Rare_Items("TWN_ShortswordOfStealth");
+DB_Rare_Items("Quest_SCL_Eclipseblade");
+DB_Rare_Items("Quest_SCL_Moonblade");
+DB_Rare_Items("WYR_Circus_Pitcher");
+DB_Rare_Items("UNI_WYR_Thiefling_HolyHandSoap");
+DB_Rare_Items("UNI_WYR_Thiefling_BaldursGateStone");
+DB_Rare_Items("WYR_SharessCaress_PotentDrink");
+DB_Rare_Items("UNI_HAV_Thiefling_FishingRod");
+DB_Rare_Items("UNI_HAV_Thiefling_CursedSpoon");
+DB_Rare_Items("UNI_HAV_Thiefling_ArrowOfSlaying");
+DB_Rare_Items("UNI_HAV_Thiefling_DecanterOfEndlessWater");
+DB_Rare_Items("UNI_HAV_Thiefling_SendingShell");
+DB_Rare_Items("WYR_Circus_WetCloak");
+DB_Rare_Items("MAG_PHB_OfJumping_Ring");
+DB_Rare_Items("MAG_PHB_ofPower_Pearl_Amulet");
+DB_Rare_Items("MAG_PHB_OfThievery_Gloves");
+DB_Rare_Items("MAG_Druid_Magic_Hide_Armor");
+DB_Rare_Items("MAG_Safeguard_Shield");
+DB_Rare_Items("ARM_Leather_1_Red");
+DB_Rare_Items("MAG_Radiant_Radiating_Hammer");
+DB_Rare_Items("MAG_ofMarksmanship_Hat");
+DB_Rare_Items("SCL_MAG_SkepticalRobber_WifesRing");
+DB_Rare_Items("MAG_PassWithoutTrace_Ring");
+DB_Rare_Items("MAG_TheOptimist_Amulet");
+DB_Rare_Items("MAG_TheOptimist_Ring");
+DB_Rare_Items("WYR_Circus_TeleportBoots");
+DB_Rare_Items("WYR_Circus_ThiefGloves");
+DB_Rare_Items("UNI_WYR_Circus_WheelRing");
+DB_Rare_Items("MAG_ShapeshiftersBurgeon_Ring");
+DB_Rare_Items("MAG_ZOC_ForceConduit_Halberd");
+DB_Rare_Items("MAG_Blindside_Shortsword");
+DB_Rare_Items("WYR_Circus_MumblingStaff");
+DB_Rare_Items("MAG_Infernal_Mace");
+DB_Rare_Items("MAG_Hunting_Shortbow");
+DB_Rare_Items("MAG_BasicEnchanted_Quarterstaff");
+DB_Rare_Items("MAG_Shadow_Battleaxe");
+DB_Rare_Items("MAG_TheWoundSeeker_Greatsword");
+DB_Rare_Items("MAG_TheHunters_Dagger");
+DB_Rare_Items("MAG_Murderous_Dagger");
+DB_Rare_Items("MAG_Throwable_Pike");
+DB_Rare_Items("MAG_Gandrel_UndeadSlayer_HeavyCrossbow");
+DB_Rare_Items("MAG_WYRM_UndeadBane_GreatAxe");
+DB_Rare_Items("MAG_WYR_Hellrider_Longbow");
+DB_Rare_Items("MAG_Dawn_Morningstar");
+DB_Rare_Items("MAG_Steadfast_Maul");
+DB_Rare_Items("MAG_Revitalizing_Warpick");
+DB_Rare_Items("MAG_Bloodsoaked_Greataxe");
+DB_Rare_Items("MAG_Poison_Greatclub");
+DB_Rare_Items("MAG_Druid_IronWood_Club");
+DB_Rare_Items("HAV_MAG_ShadowRending_Dagger");
+DB_Rare_Items("MAG_Psychic_MentalSundering_Dagger");
+DB_Rare_Items("MAG_Githborn_TelekineticBolt_HeavyCrossbow");
+DB_Rare_Items("MAG_Surgeon_Bonesaw");
+DB_Rare_Items("MAG_Surgeon_Leech");
+DB_Rare_Items("MAG_Enforcer_NonLethalFright_Club");
+DB_Rare_Items("MAG_Surgeon_Syringe");
+DB_Rare_Items("MAG_Zhentarim_BloodfeederBlade_Rapier");
+DB_Rare_Items("MAG_LC_BurnOnDamage_Scimitar");
+DB_Rare_Items("MAG_Kuotoa_Lightning_Spear");
+DB_Rare_Items("MAG_Harpers_SingingSword");
+DB_Rare_Items("MAG_Spellbreaker_Battleaxe");
+DB_Rare_Items("MAG_OfRupture_Rapier");
+DB_Rare_Items("MAG_Surgeon_Trepan");
+DB_Rare_Items("MAG_WoodWoad_Nature_Shield");
+DB_Rare_Items("UNI_ARM_OfArchery_Gloves");
+DB_Rare_Items("MAG_Oathbreaker_Platemail");
+DB_Rare_Items("MAG_Shadow_CriticalBoostWhileObscured_Helmet");
+DB_Rare_Items("MAG_Shadow_BlindImmunity_Ring");
+DB_Rare_Items("MAG_Acid_NoxiousFumes_Gloves");
+DB_Rare_Items("MAG_Acid_AcidMeleeCounter_Cloak");
+DB_Rare_Items("MAG_Acid_AcidDamageOnWeaponAttack_Ring");
+DB_Rare_Items("MAG_Poison_PoisonLethality_Ring");
+DB_Rare_Items("MAG_Thunder_ReverberationOnStatusApply_Boots");
+DB_Rare_Items("MAG_Thunder_ReverberationOnRangeSpellDamage_Amulet");
+DB_Rare_Items("MAG_Thunder_Reverberation_Gloves");
+DB_Rare_Items("MAG_Thunder_InflictDazeOnThunderDamage_Ring");
+DB_Rare_Items("MAG_Thunder_InflictDazeOnReverberatedCreature_Cloak");
+DB_Rare_Items("MAG_Thunder_ArcaneAcuityOnThunderDamage_Hat");
+DB_Rare_Items("MAG_Fire_BurningOnDamaged_Cloak");
+DB_Rare_Items("MAG_Fire_HeatOnInflictBurning_Boots");
+DB_Rare_Items("MAG_Fire_ArcaneAcuityOnFireDamage_Hat");
+DB_Rare_Items("MAG_Fire_HeatOnTakingFireDamage_Amulet");
+DB_Rare_Items("MAG_Fire_SelfImmolation_Ring");
+DB_Rare_Items("MAG_ElementalGish_BaneOnElementalWeaponDamage_Gloves");
+DB_Rare_Items("MAG_ElementalGish_ElementalInfusion_Ring");
+DB_Rare_Items("MAG_ElementalGish_AbsorbElements_Cloak");
+DB_Rare_Items("MAG_ElementalGish_CantripBooster_Amulet");
+DB_Rare_Items("WYR_Circus_HandaxeReturning");
+DB_Rare_Items("MAG_Gish_PsychicDamageBonusWhileConcentrating_Ring");
+DB_Rare_Items("MAG_Shadow_FogCloud_Amulet");
+DB_Rare_Items("MAG_Radiant_DamageBonusOnIlluminatedTarget_Ring");
+DB_Rare_Items("MAG_Radiant_RadiatingOrb_Armor");
+DB_Rare_Items("MAG_Radiant_RadiatingOrb_Ring");
+DB_Rare_Items("MAG_Radiant_RadiatingOrb_Gloves");
+DB_Rare_Items("MAG_ZOC_ForceConduitWhileSurounded_Boots");
+DB_Rare_Items("MAG_ZOC_AdvantageOnMeleeAttackWhileSurounded_Gloves");
+DB_Rare_Items("MAG_Fire_HeatOnFireDamage_Gloves");
+DB_Rare_Items("MAG_Radiant_Radiating_Helmet");
+DB_Rare_Items("MAG_Shadow_SpellDCBonusWhileObscured_Circlet");
+DB_Rare_Items("MAG_Shadow_FogOfCloudDisengage_Cloak");
+DB_Rare_Items("MAG_Shadow_ShadowBlade_Ring");
+DB_Rare_Items("MAG_Harpers_RingOfAttraction");
+DB_Rare_Items("MAG_Monk_Magic_Armor");
+DB_Rare_Items("TWN_AasimarSurvivor_HazmatSuit");
+DB_Rare_Items("SCL_MastiffPoachers_Ring");
+DB_Rare_Items("MAG_Zhentarim_Lockpicking_Gloves");
+DB_Rare_Items("MAG_WYRM_SleepImmunity_Amulet");
+DB_Rare_Items("MAG_Harpers_ShieldsOfShadows");
+DB_Rare_Items("UNI_OrpheusChains_Helmet");
+DB_Rare_Items("UNI_LOW_SteelWatchFoundry_ExplodingCollar");
+DB_Rare_Items("LOW_DeadMansSwitch_Shield");
+DB_Rare_Items("QUEST_WYR_RestoredMagicRing");
+DB_Rare_Items("MAG_Oathbreaker_Boots");
+DB_Rare_Items("MAG_Oathbreaker_Gloves");
+DB_Rare_Items("MAG_Oathbreaker_Helmet");
+DB_Rare_Items("UNI_OrpheusChains_Gloves");
+DB_Rare_Items("MAG_ElementalGish_MomentumOnElementalDamage_Boots");
+DB_Rare_Items("MAG_Harpers_RingOfProjection");
+DB_Rare_Items("MAG_Psychic_MentalOverload_Ring");
+DB_Rare_Items("MAG_Shadow_Shadowstep_Boots");
+DB_Rare_Items("CRE_Hatchery_AcidPoisonImmunity_Boots");
+DB_Rare_Items("MAG_CQCaster_GainArcaneChargeOnDamaged_Robe");
+DB_Rare_Items("MAG_CQCaster_SpellDCBonusWhileThreatened_Circlet");
+DB_Rare_Items("MAG_CQCaster_TempHPAfterCast_Cloak");
+DB_Rare_Items("MAG_Enforcer_NonLethalBlessing_Shield");
+DB_Rare_Items("CRE_MAG_Githborn_Amulet");
+DB_Rare_Items("MAG_Enforcer_RejunevatingKnock_Helmet");
+DB_Rare_Items("MAG_Druid_Ironwood_Armor");
+DB_Rare_Items("MAG_PHB_CloakOfProtection_Cloak");
+DB_Rare_Items("MAG_Psychic_MentalFatigue_Gloves");
+DB_Rare_Items("MAG_Psychic_PsychicFeedback_Armor");
+DB_Rare_Items("MAG_Psychic_Staggering_Amulet");
+DB_Rare_Items("MAG_Psychic_TempHP_Ring");
+DB_Rare_Items("MAG_Druid_Ironvine_Shield");
+DB_Rare_Items("ALCH_Solution_Grenade_SporesConfusion");
+DB_Rare_Items("MAG_OfAwareness_Bow");
+DB_Rare_Items("OBJ_SerpentVenom");
+DB_Rare_Items("WPN_Shortbow_1");
+DB_Rare_Items("WPN_Scimitar_1");
+DB_Rare_Items("WPN_Rapier_1");
+DB_Rare_Items("OBJ_Dye_Teal");
+DB_Rare_Items("WPN_Quarterstaff_1");
+DB_Rare_Items("OBJ_ArrowOfUndeadSlaying");
+DB_Rare_Items("OBJ_ArrowOfPlantSlaying");
+DB_Rare_Items("OBJ_ArrowOfOozeSlaying");
+DB_Rare_Items("OBJ_ArrowOfMonstrositySlaying");
+DB_Rare_Items("WPN_Pike_1");
+DB_Rare_Items("MAG_Gortash_Boots");
+DB_Rare_Items("OBJ_Scroll_MistyStep");
+DB_Rare_Items("OBJ_ArrowOfFeySlaying");
+DB_Rare_Items("UNI_RobeOfSummer");
+DB_Rare_Items("OBJ_ArrowOfGiantSlaying");
+DB_Rare_Items("OBJ_Scroll_PhantasmalForce");
+DB_Rare_Items("OBJ_Scroll_ArcaneLock");
+DB_Rare_Items("ARM_Plate_Body_1");
+DB_Rare_Items("OBJ_ArrowOfFiendSlaying");
+DB_Rare_Items("ARM_Splint_Body_1");
+DB_Rare_Items("ARM_Robe_Body_1");
+DB_Rare_Items("WPN_Morningstar_1");
+DB_Rare_Items("OBJ_ArrowOfElementalSlaying");
+DB_Rare_Items("WPN_Maul_1");
+DB_Rare_Items("WPN_Mace_1");
+DB_Rare_Items("WPN_Longsword_Gith");
+DB_Rare_Items("OBJ_Scroll_FlameBlade");
+DB_Rare_Items("WPN_Longsword_1");
+DB_Rare_Items("ARM_ChainMail_Body_1");
+DB_Rare_Items("WPN_Shortsword_1");
+DB_Rare_Items("OBJ_Scroll_MirrorImage");
+DB_Rare_Items("ARM_Magic_Shoes");
+DB_Rare_Items("WPN_Shortsword_Gith");
+DB_Rare_Items("OBJ_Dye_GreenSage");
+DB_Rare_Items("OBJ_Dye_Golden");
+DB_Rare_Items("OBJ_Scroll_FlamingSphere");
+DB_Rare_Items("OBJ_Dye_BlueYellow");
+DB_Rare_Items("OBJ_Scroll_DetectThoughts");
+DB_Rare_Items("OBJ_Scroll_Darkvision");
+DB_Rare_Items("OBJ_Scroll_Darkness");
+DB_Rare_Items("OBJ_Scroll_CrownOfMadness");
+DB_Rare_Items("OBJ_Scroll_Blur");
+DB_Rare_Items("OBJ_Scroll_Blindness");
+DB_Rare_Items("OBJ_Scroll_AcidArrow");
+DB_Rare_Items("OBJ_Dye_Ocean");
+DB_Rare_Items("WPN_Merregon_Halberd");
+DB_Rare_Items("UNI_StaffOfRain");
+DB_Rare_Items("WPN_Longbow_1");
+DB_Rare_Items("OBJ_Dye_Orange");
+DB_Rare_Items("OBJ_Dye_OrangeBlue");
+DB_Rare_Items("OBJ_Scroll_GustOfWind");
+DB_Rare_Items("OBJ_Dye_Blue");
+DB_Rare_Items("WPN_WarPick_1");
+DB_Rare_Items("OBJ_Dye_Purple_02");
+DB_Rare_Items("WPN_Warhammer_1");
+DB_Rare_Items("OBJ_Scroll_HoldPerson");
+DB_Rare_Items("WPN_Trident_1");
+DB_Rare_Items("_Ring_Magic");
+DB_Rare_Items("OBJ_Dye_Red");
+DB_Rare_Items("OBJ_Dye_RedBrown");
+DB_Rare_Items("WPN_Spear_1");
+DB_Rare_Items("OBJ_Scroll_Invisibility");
+DB_Rare_Items("WPN_Sickle_1");
+DB_Rare_Items("OBJ_Dye_BlueGreen");
+DB_Rare_Items("WPN_LightHammer_1");
+DB_Rare_Items("ARM_Cloth_Body_1");
+DB_Rare_Items("WPN_Javelin_1");
+DB_Rare_Items("WPN_Greatclub_1");
+DB_Rare_Items("WPN_LightCrossbow_1");
+DB_Rare_Items("WPN_Glaive_1");
+DB_Rare_Items("OBJ_Potion_Healing_Supreme");
+DB_Rare_Items("ALCH_Solution_Elixir_Alertness");
+DB_Rare_Items("OBJ_Potion_Of_Hill_Giant_Strength");
+DB_Rare_Items("ALCH_Solution_Elixir_Bloodlust");
+DB_Rare_Items("OBJ_Potion_Of_Heroism");
+DB_Rare_Items("OBJ_ArrowOfDarkness");
+DB_Rare_Items("ALCH_Solution_Elixir_Barkskin");
+DB_Rare_Items("ARM_Breastplate_Body_1");
+DB_Rare_Items("OBJ_Potion_Of_Speed");
+DB_Rare_Items("WPN_Greatsword_1");
+DB_Rare_Items("OBJ_ArrowOfDetonation");
+DB_Rare_Items("ALCH_Solution_Elixir_Concentration");
+DB_Rare_Items("OBJ_DrowPoison");
+DB_Rare_Items("WPN_Flail_1");
+DB_Rare_Items("OBJ_Potion_Of_Poison_Resistance");
+DB_Rare_Items("OBJ_Potion_Of_Fire_Resistance");
+DB_Rare_Items("ALCH_Solution_Elixir_Darkvision");
+DB_Rare_Items("ALCH_Solution_Elixir_Enlarge");
+DB_Rare_Items("OBJ_Potion_Of_Lightning_Resistance");
+DB_Rare_Items("ALCH_Solution_Elixir_Meditation");
+DB_Rare_Items("ARM_ScaleMail_Body_1");
+DB_Rare_Items("ALCH_Solution_Elixir_Meditation_Greater");
+DB_Rare_Items("WPN_Dart_1");
+DB_Rare_Items("ARM_ChainShirt_Body_1");
+DB_Rare_Items("ARM_HalfPlate_Body_1");
+DB_Rare_Items("WPN_Greataxe_1");
+DB_Rare_Items("OBJ_Scroll_Shatter");
+DB_Rare_Items("OBJ_ArrowOfConstructSlaying");
+DB_Rare_Items("WPN_HeavyCrossbow_Gith");
+DB_Rare_Items("WPN_HeavyCrossbow_1");
+DB_Rare_Items("OBJ_Scroll_Enlarge");
+DB_Rare_Items("WPN_HandCrossbow_1");
+DB_Rare_Items("OBJ_ArrowOfCelestialSlaying");
+DB_Rare_Items("ARM_Padded_Body_1");
+DB_Rare_Items("OBJ_ArrowOfBeastSlaying");
+DB_Rare_Items("OBJ_ArrowOfWraithsEmbrace");
+DB_Rare_Items("WPN_Handaxe_1");
+DB_Rare_Items("OBJ_Scroll_Web");
+DB_Rare_Items("OBJ_Scroll_SpeakWithDead");
+DB_Rare_Items("ARM_Leather_Body_1");
+DB_Rare_Items("ARM_StuddedLeather_Body_1");
+DB_Rare_Items("OBJ_Dye_Green");
+DB_Rare_Items("OBJ_Scroll_SeeInvisibility");
+DB_Rare_Items("ARM_Hide_Body_1");
+DB_Rare_Items("WPN_Greatsword_Gith");
+DB_Rare_Items("OBJ_Scroll_MagicWeapon");
+DB_Rare_Items("ARM_RingMail_Body_1");
+DB_Rare_Items("WPN_Halberd_1");
+DB_Rare_Items("MAG_Zhentarim_Swap_Gloves");
+DB_Rare_Items("MAG_Barbarian_Magic_Armor_1");
+DB_Rare_Items("MAG_OfBlink_Ring");
+DB_Rare_Items("MAG_BarbMonk_Cloth_A_1");
+DB_Rare_Items("MAG_BarbMonk_Cloth_A_1_Late");
+DB_Rare_Items("MAG_SecondChance_Amulet");
+DB_Rare_Items("WPN_Rapier_2");
+DB_Rare_Items("MAG_Wizard_Pointy_Hat");
+DB_Rare_Items("MAG_EGW_OfTheDrunkard_Amulet");
+DB_Rare_Items("MAG_Drunken_Cloth");
+DB_Rare_Items("WPN_Trident_2");
+DB_Rare_Items("WPN_Shortsword_2");
+DB_Rare_Items("MAG_BarbMonk_Cloth_Hat_A_1");
+DB_Rare_Items("WPN_Spear_2");
+DB_Rare_Items("WPN_Shortbow_2");
+DB_Rare_Items("WPN_Scimitar_2");
+DB_Rare_Items("MAG_OfTheBalancedHands_Gloves");
+DB_Rare_Items("MAG_Hat_Butler");
+DB_Rare_Items("MAG_Monk_Magic_Armor_1");
+DB_Rare_Items("MAG_OfSharpCaster_Hat");
+DB_Rare_Items("MAG_BarbMonk_Cloth_Hat_A_1_Late");
+DB_Rare_Items("MAG_Hat_Circushat");
+DB_Rare_Items("MAG_DarkJusticiar_HalfPlate");
+DB_Rare_Items("MAG_Projectile_Shoes");
+DB_Rare_Items("ALCH_Solution_Elixir_SeeInvisible");
+DB_Rare_Items("MAG_BarbMonk_Offensive_Cloth");
+DB_Rare_Items("MAG_Lesser_Infernal_Metal_Gloves");
+DB_Rare_Items("MAG_Lesser_Infernal_Plate_Armor");
+DB_Rare_Items("MAG_OfAutomaton_Gloves");
+DB_Rare_Items("ARM_Padded_Body_2");
+DB_Rare_Items("ARM_Leather_Body_2");
+DB_Rare_Items("ARM_StuddedLeather_Body_2");
+DB_Rare_Items("MAG_OfShielding_Shield");
+DB_Rare_Items("UNI_DarkUrge_Bhaal_Cloak");
+DB_Rare_Items("LOW_JannathRing_Ring");
+DB_Rare_Items("LOW_KerriRing_Ring");
+DB_Rare_Items("ARM_Hide_Body_2");
+DB_Rare_Items("ARM_BootsOfDimensionalDoor");
+DB_Rare_Items("WYR_MonkAmulet_Amulet_NoGhost");
+DB_Rare_Items("ALCH_Solution_Elixir_Tadpole");
+DB_Rare_Items("MAG_WYRM_OfTruthTelling_Ring");
+DB_Rare_Items("MAG_OfArcanicAssault_Robe");
+DB_Rare_Items("MAG_OfSpellResistance_Robe");
+DB_Rare_Items("MAG_Heat_Fire_Robe");
+DB_Rare_Items("ARM_ChainShirt_Body_2");
+DB_Rare_Items("UNI_SHA_DarkJusticiar_Boots");
+DB_Rare_Items("MAG_Monk_Fire_Gloves");
+DB_Rare_Items("MAG_Monk_Thunder_Gloves");
+DB_Rare_Items("MAG_Monk_Lightning_Gloves");
+DB_Rare_Items("MAG_Banites_Gloves");
+DB_Rare_Items("MAG_Monk_Cold_Gloves");
+DB_Rare_Items("MAG_OpenHand_Radiant_Gloves");
+DB_Rare_Items("MAG_LC_HellishMadness_Amulet");
+DB_Rare_Items("MAG_Lesser_Infernal_Metal_Helmet");
+DB_Rare_Items("MAG_Druid_Late_Hide_Armor_1");
+DB_Rare_Items("UNI_ARM_OfMissileSnaring_Gloves");
+DB_Rare_Items("UNI_ARM_OfDefense_Gloves");
+DB_Rare_Items("MAG_BarbMonk_Defensive_Cloth");
+DB_Rare_Items("MAG_Druid_Magic_StuddedLeather_Armor");
+DB_Rare_Items("WPN_Warhammer_2");
+DB_Rare_Items("MAG_Fighter_ActionSurge_AttackBonus_Gloves");
+DB_Rare_Items("MAG_Absolute_Protecter_Shield");
+DB_Rare_Items("MAG_OB_Paladin_DeathKnight_Gloves");
+DB_Rare_Items("MAG_OB_Paladin_DeathKnight_Boots");
+DB_Rare_Items("MAG_ArcaneTrickster_Ring");
+DB_Rare_Items("MAG_Stalker_Gloves");
+DB_Rare_Items("MAG_Evasive_Shoes");
+DB_Rare_Items("MAG_BG_Nimblefinger_Gloves");
+DB_Rare_Items("MAG_CKM_SerpenScale_Armor");
+DB_Rare_Items("MAG_BarbMonk_Leather_Circlet");
+DB_Rare_Items("MAG_BG_OfCrushing_Gloves");
+DB_Rare_Items("MAG_BG_Wondrous_Gloves");
+DB_Rare_Items("MAG_OfTheDuelist_Gloves");
+DB_Rare_Items("MAG_Jumping_Shoes");
+DB_Rare_Items("MAG_Acrobat_Shoes");
+DB_Rare_Items("MAG_Healer_HPRestoration_Amulet");
+DB_Rare_Items("MAG_MM_Sorcery_SeekingSpell_Gloves");
+DB_Rare_Items("MAG_RiskyAttack_Ring");
+DB_Rare_Items("MAG_OfSwordmaster_Gloves");
+DB_Rare_Items("MAG_Martial_Exertion_Gloves");
+DB_Rare_Items("WPN_WarPick_2");
+DB_Rare_Items("MAG_PHB_OfFreeAction_Ring");
+DB_Rare_Items("ARM_Robe_Body_2");
+DB_Rare_Items("ARM_Cloth_Body_2");
+DB_Rare_Items("UNI_ARM_OfTeleportation_Helm");
+DB_Rare_Items("MAG_Illithid_Carapace_Boots");
+DB_Rare_Items("OBJ_BloodPotion_Halfing");
+DB_Rare_Items("UNI_LOW_KiamGodasKilatDrum");
+DB_Rare_Items("MAG_Fire_HeatOnWeaponDamage_Battleaxe");
+DB_Rare_Items("MAG_Frost_Offhand_Dagger");
+DB_Rare_Items("MAG_Invisible_Pike");
+DB_Rare_Items("MAG_BG_OfSpeed_LightCrossbow");
+DB_Rare_Items("MAG_BG_Harold_HeavyCrossbow");
+DB_Rare_Items("MAG_BG_Darkfire_Shortbow");
+DB_Rare_Items("MAG_LC_Counterspell_Quarterstaff");
+DB_Rare_Items("MAG_Moonlight_Glaive");
+DB_Rare_Items("MAG_Shadow_Shortsword");
+DB_Rare_Items("MAG_Corrosive_Flail");
+DB_Rare_Items("MAG_Harpers_OfWeapons_Quarterstaff");
+DB_Rare_Items("MAG_WYRM_Farlin_Dagger");
+DB_Rare_Items("UNI_WYR_Circus_ClownHammer");
+DB_Rare_Items("MAG_BG_DragonsBreath_Glaive");
+DB_Rare_Items("MAG_WYRM_Commander_Longsword");
+DB_Rare_Items("MAG_LC_Umberlee_Cold_Sickle");
+DB_Rare_Items("MAG_LC_PirateCommander_Scimitar");
+DB_Rare_Items("MAG_LC_ChainDevil_Flail");
+DB_Rare_Items("MAG_SWA_Roaring_Maul");
+DB_Rare_Items("MAG_LC_Fleshred_Longsword");
+DB_Rare_Items("MAG_LC_Frigid_Trident");
+DB_Rare_Items("MAG_PHB_PactKeeper_Quarterstaff");
+DB_Rare_Items("MAG_LC_OfTheFist_MorningStar");
+DB_Rare_Items("MAG_LC_UndeadSlayer_Crossbow");
+DB_Rare_Items("MAG_Zhentarim_SleeperDagger");
+DB_Rare_Items("MAG_Shadow_Blinding_Bow");
+DB_Rare_Items("MAG_Harpers_Harmonizing_Rapier");
+DB_Rare_Items("MAG_Illithid_MindOverload_Weapon_Longsword");
+DB_Rare_Items("MAG_LC_Lorroakan_Quarterstaff");
+DB_Rare_Items("MAG_Vicious_Dagger");
+DB_Rare_Items("LOW_Elfsong_EmperorSword_LongSword");
+DB_Rare_Items("END_Emperor_Staff");
+DB_Rare_Items("MAG_Force_Pike");
+DB_Rare_Items("MAG_Ketheric_Warhammer");
+DB_Rare_Items("MAG_Ambusher_Shortsword");
+DB_Rare_Items("MAG_Infernal_Warhammer");
+DB_Rare_Items("MAG_Infernal_Longsword");
+DB_Rare_Items("MAG_Infernal_Spear");
+DB_Rare_Items("MAG_Infernal_Mace_2");
+DB_Rare_Items("MAG_PHB_Defender_Greataxe");
+DB_Rare_Items("MAG_MonsterSlayer_Glaive");
+DB_Rare_Items("MAG_OB_Paladin_DeathKnight_Longsword");
+DB_Rare_Items("MAG_BG_Harmonium_Halberd");
+DB_Rare_Items("MAG_BG_OfEasthaven_Defender_Flail");
+DB_Rare_Items("MAG_BG_OfAges_Flail");
+DB_Rare_Items("MAG_Bonded_Throwing_Battleaxe");
+DB_Rare_Items("MAG_Bonded_Lethal_Longsword");
+DB_Rare_Items("MAG_Bonded_Shocking_Warhammer");
+DB_Rare_Items("MAG_Bonded_Baneful_Shortsword");
+DB_Rare_Items("MAG_Slicing_Shortsword");
+DB_Rare_Items("MAG_BG_OfTheBanshee_Bow");
+DB_Rare_Items("MAG_FreeCast_Shortsword");
+DB_Rare_Items("MAG_MagicMissile_HandCrossbow");
+DB_Rare_Items("MAG_Drowelf_SpiderSnare_Longsword");
+DB_Rare_Items("MAG_HigherNecromancy_Staff");
+DB_Rare_Items("MAG_Infernal_Hellbeard_Halberd");
+DB_Rare_Items("MAG_Tyrrant_Warhammer");
+DB_Rare_Items("MAG_LC_Fleshrend_Shortsword");
+DB_Rare_Items("MAG_Vicious_Battleaxe");
+DB_Rare_Items("MAG_Vicious_Shortbow");
+DB_Rare_Items("MAG_Vicious_Shortsword");
+DB_Rare_Items("MAG_FlamingFist_FlamingBlade");
+DB_Rare_Items("MAG_Raven_Gloves");
+DB_Rare_Items("MAG_Githborn_Mindcrusher_Greatsword");
+DB_Rare_Items("MAG_StrongString_Longbow");
+DB_Rare_Items("OBJ_BloodPotion_Gnome");
+DB_Rare_Items("MAG_LC_Lorroakan_Robe");
+DB_Rare_Items("OBJ_BloodPotion_Human");
+DB_Rare_Items("OBJ_BloodPotion_HalfOrc");
+DB_Rare_Items("WPN_Javelin_2");
+DB_Rare_Items("WPN_LightCrossbow_2");
+DB_Rare_Items("WPN_LightHammer_2");
+DB_Rare_Items("WPN_Longbow_2");
+DB_Rare_Items("WPN_Longsword_2");
+DB_Rare_Items("MAG_BlackTentacle_Amulet");
+DB_Rare_Items("MAG_Toll_Collector_Cloak");
+DB_Rare_Items("MAG_DevilsBlackmith_Gloves");
+DB_Rare_Items("MAG_DevilsBlackmith_ScaleMail");
+DB_Rare_Items("OBJ_BloodPotion_Dwarf");
+DB_Rare_Items("MAG_DevilsBlackmith_Boots");
+DB_Rare_Items("WPN_Mace_2");
+DB_Rare_Items("WPN_Maul_2");
+DB_Rare_Items("WPN_Morningstar_2");
+DB_Rare_Items("MAG_LOW_Rat_Keepsake_Ring");
+DB_Rare_Items("MAG_Viconia_Robe");
+DB_Rare_Items("MAG_Justiciar_Shield");
+DB_Rare_Items("WPN_Pike_2");
+DB_Rare_Items("WPN_Quarterstaff_2");
+DB_Rare_Items("MAG_Ketheric_Shield");
+DB_Rare_Items("UNI_LOW_GlimmergadSelgauntFiddle");
+DB_Rare_Items("UNI_LOW_FalataericCliLyre");
+DB_Rare_Items("UNI_LOW_StolyarofsTableLute");
+DB_Rare_Items("UNI_LOW_DostrealtsPiccolo");
+DB_Rare_Items("MAG_Helmet_Human_Watcher");
+DB_Rare_Items("OBJ_BloodPotion_Elf");
+DB_Rare_Items("OBJ_BloodPotion_Tiefling");
+DB_Rare_Items("OBJ_BloodPotion_HalfElf");
+DB_Rare_Items("MAG_Combat_Quarterstaff");
+DB_Rare_Items("MAG_Colossal_Greatsword");
+DB_Rare_Items("MAG_Finesse_Longsword");
+DB_Rare_Items("MAG_CQCaster_GainArcaneChargeOnDamage_Quarterstaff");
+DB_Rare_Items("MAG_Thunder_ThunderClap_Quarterstaff");
+DB_Rare_Items("MAG_Fire_FireDamage_Quarterstaff");
+DB_Rare_Items("Quest_GLO_Moonlantern_Gale");
+DB_Rare_Items("SHA_SharSpear");
+DB_Rare_Items("WPN_Battleaxe_2");
+DB_Rare_Items("WPN_Dagger_2");
+DB_Rare_Items("WPN_Dart_2");
+DB_Rare_Items("TWN_RatCatcher");
+DB_Rare_Items("WPN_Flail_2");
+DB_Rare_Items("WPN_Glaive_2");
+DB_Rare_Items("WPN_Greataxe_2");
+DB_Rare_Items("WPN_Greatclub_2");
+DB_Rare_Items("WPN_Greatsword_2");
+DB_Rare_Items("UNI_WYR_Circus_FacePaint");
+DB_Rare_Items("WPN_Halberd_2");
+DB_Rare_Items("WPN_HandCrossbow_2");
+DB_Rare_Items("WPN_HeavyCrossbow_2");
+DB_Rare_Items("UNI_LOW_KarabasansGift_Grenade");
+DB_Rare_Items("UNI_LOW_KarabasansGift");
+DB_Rare_Items("OBJ_BloodPotion_Dragonborn_Poison");
+DB_Rare_Items("OBJ_BloodPotion_Dragonborn_Acid");
+DB_Rare_Items("OBJ_BloodPotion_Dragonborn_Lightning");
+DB_Rare_Items("OBJ_BloodPotion_Dragonborn_Ice");
+DB_Rare_Items("OBJ_BloodPotion_Dragonborn_Fire");
+DB_Rare_Items("OBJ_BloodPotion_Githyanki");
+DB_Rare_Items("MAG_Critical_CriticalCombo_BattleAxe");
+DB_Rare_Items("MAG_LC_Tinkerer_Gloves");
+DB_Rare_Items("MAG_Gish_ArcaneSynergy_Ring");
+DB_Rare_Items("MAG_LC_Umberlee_Regeneration_Boots");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff12versatile_OnDamage_Longsword");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff1_OnDamage_Scimitar");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff1_OnDamage_Mace");
+DB_Rare_Items("MAG_LC_Umberlee_Protection_Cape");
+DB_Rare_Items("OBJ_ArrowOfTeleportation");
+DB_Rare_Items("MAG_LowHP_IncreaseDamage_Greataxe");
+DB_Rare_Items("UND_SwordInStone");
+DB_Rare_Items("OBJ_Dye_BlackBlue");
+DB_Rare_Items("OBJ_Dye_BlackGreen");
+DB_Rare_Items("UNI_SickleOfBOOOAL");
+DB_Rare_Items("OBJ_Dye_BlackRed");
+DB_Rare_Items("OBJ_Dye_BlackTeal");
+DB_Rare_Items("UND_SocietyOfBrilliance_ResonanceStaff");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff2_OnDamage_HeavyCrossbow");
+DB_Rare_Items("PLA_ConflictedFlind_Flail_Broken");
+DB_Rare_Items("OBJ_Dye_BluePurple");
+DB_Rare_Items("OBJ_Dye_BlueYellow_02");
+DB_Rare_Items("OBJ_Dye_GreenSwamp");
+DB_Rare_Items("OBJ_Dye_GreenPink");
+DB_Rare_Items("FOR_IncompleteMasterwork_SussurSickle");
+DB_Rare_Items("FOR_IncompleteMasterwork_SussurDagger");
+DB_Rare_Items("FOR_IncompleteMasterwork_SussurGreatsword");
+DB_Rare_Items("OBJ_Dye_IceCream_03");
+DB_Rare_Items("DEN_FaithwardenStaff");
+DB_Rare_Items("OBJ_Dye_IceCream_04");
+DB_Rare_Items("DEN_HalsinBlade");
+DB_Rare_Items("UND_OBJ_Runepowder_Vial");
+DB_Rare_Items("MAG_Paladin_RestoreChannelDivinity_Armor");
+DB_Rare_Items("PLA_WPN_DreadedSkullsFlail");
+DB_Rare_Items("MAG_ChargedLightning_Longbow");
+DB_Rare_Items("MAG_ChargedLightning_Trident");
+DB_Rare_Items("MAG_ChargedLightning_Quarterstaff");
+DB_Rare_Items("MAG_ZOC_Force_Helmet");
+DB_Rare_Items("MAG_ZOC_ForceConduit_ChainMail");
+DB_Rare_Items("MAG_ZOC_RampartAura_Amulet");
+DB_Rare_Items("OBJ_Scroll_ProtectionFromEnergy");
+DB_Rare_Items("OBJ_Scroll_RemoveCurse");
+DB_Rare_Items("OBJ_Scroll_Revivify_TrueResurrection");
+DB_Rare_Items("MAG_Gish_WeaknessBranding_Amulet");
+DB_Rare_Items("MAG_Gish_TempHPWhileConcentrating_Boots");
+DB_Rare_Items("OBJ_Scroll_StinkingCloud");
+DB_Rare_Items("MAG_Gish_ArcaneSynergy_Circlet");
+DB_Rare_Items("MAG_Gish_ArcaneAcuity_Gloves");
+DB_Rare_Items("OBJ_Scroll_VampiricTouch");
+DB_Rare_Items("OBJ_Potion_Of_Cloud_Giant_Strength");
+DB_Rare_Items("OBJ_Potion_Of_Invisibility");
+DB_Rare_Items("MAG_Frost_GenerateFrostOnDamage_Robe");
+DB_Rare_Items("OBJ_Potion_Of_Necrotic_Resistance");
+DB_Rare_Items("MAG_ChargedLightning_EnsnaringShock_Ring");
+DB_Rare_Items("MAG_ChargedLightning_StaticDischarge_Amulet");
+DB_Rare_Items("OBJ_WyvernPoison");
+DB_Rare_Items("SHA_JusticiarArmor_Gloves");
+DB_Rare_Items("MAG_TWN_Surgeon_ParalyzingCritical_Amulet");
+DB_Rare_Items("OBJ_CrawlerMucus");
+DB_Rare_Items("OBJ_Malice");
+DB_Rare_Items("OBJ_ArrowOfSmokepowder");
+DB_Rare_Items("OBJ_ArrowOfRicochet");
+DB_Rare_Items("OBJ_ArrowOfAntimagic");
+DB_Rare_Items("TWN_BootsOfApparentDeath");
+DB_Rare_Items("TWN_BondedByLove_WifesRing");
+DB_Rare_Items("TWN_BondedByLove_HusbandsRing");
+DB_Rare_Items("OBJ_Dye_Pink");
+DB_Rare_Items("OBJ_Dye_Purple_03");
+DB_Rare_Items("MAG_Bard_RefreshBardicInspirationSlot_Shoes");
+DB_Rare_Items("MAG_ChargedLightning_BonusAC_Robe");
+DB_Rare_Items("UNI_UND_RingOfMindShielding");
+DB_Rare_Items("UND_ShadowOfMenzoberranzan");
+DB_Rare_Items("OBJ_Scroll_FireShield_Warm");
+DB_Rare_Items("OBJ_Scroll_IceStorm");
+DB_Rare_Items("OBJ_Scroll_Invisibility_Greater");
+DB_Rare_Items("GOB_DrowCommander_Leather_Armor");
+DB_Rare_Items("OBJ_Scroll_LightningBolt");
+DB_Rare_Items("OBJ_Scroll_PhantasmalKiller");
+DB_Rare_Items("OBJ_Scroll_Polymorph");
+DB_Rare_Items("OBJ_Scroll_ResilientSphere");
+DB_Rare_Items("OBJ_Scroll_Slow");
+DB_Rare_Items("OBJ_Scroll_Stoneskin");
+DB_Rare_Items("OBJ_Scroll_WallOfFire");
+DB_Rare_Items("OBJ_TadpolePowerJar");
+DB_Rare_Items("OBJ_TadpolePowerJar_Absolute");
+DB_Rare_Items("ARM_TalismanOfJergal");
+DB_Rare_Items("ALCH_Solution_Elixir_ArcaneAcuity");
+DB_Rare_Items("MAG_HAV_ThornBlade_Scimitar");
+DB_Rare_Items("MAG_TWN_Taxblade_Morningstar");
+DB_Rare_Items("MAG_TWN_Brewery_Greatclub");
+DB_Rare_Items("UNI_BrilliantRetort");
+DB_Rare_Items("ALCH_Solution_Potion_Rest_Lesser");
+DB_Rare_Items("ALCH_Solution_Elixir_Criticals");
+DB_Rare_Items("ALCH_Solution_Potion_Flying");
+DB_Rare_Items("ALCH_Solution_Elixir_Freedom");
+DB_Rare_Items("ALCH_Solution_Oil_Frost");
+DB_Rare_Items("ALCH_Solution_Oil_Combustion");
+DB_Rare_Items("ALCH_Solution_Oil_Bane");
+DB_Rare_Items("ALCH_Solution_Elixir_Meditation_Superior");
+DB_Rare_Items("OBJ_Scroll_FireShield_Chill");
+DB_Rare_Items("OBJ_Scroll_Knock");
+DB_Rare_Items("OBJ_Scroll_DimensionDoor");
+DB_Rare_Items("OBJ_Scroll_ConjureMinorElemental");
+DB_Rare_Items("OBJ_Dye_Purple_04");
+DB_Rare_Items("MAG_ChargedLightning_AbilityCheckBoost_Gloves");
+DB_Rare_Items("OBJ_Dye_PurpleRed");
+DB_Rare_Items("MAG_ChargedLightning_Electrocute_Armor");
+DB_Rare_Items("MAG_ChargedLightning_Dash_Boots");
+DB_Rare_Items("MAG_ChargedLightning_ElectricSurface_Boots");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff1_OnDamage_Shield");
+DB_Rare_Items("MAG_Violence_ViolenceOnDash_Boots");
+DB_Rare_Items("MAG_Violence_ViolenceOnDamaged_Helmet");
+DB_Rare_Items("OBJ_Dye_RedWhite");
+DB_Rare_Items("MAG_Mobility_MomentumOnCombatStart_Helmet");
+DB_Rare_Items("MAG_Mobility_MomentumOnDash_Boots");
+DB_Rare_Items("OBJ_Dye_WhiteBlack");
+DB_Rare_Items("OBJ_Dye_WhiteBrown");
+DB_Rare_Items("ARM_Splint_Body_Dwarven");
+DB_Rare_Items("MAG_Gortash_Cloth");
+DB_Rare_Items("MAG_Orin_Cloth");
+DB_Rare_Items("OBJ_Scroll_DispelMagic");
+DB_Rare_Items("OBJ_Scroll_ArcaneEye");
+DB_Rare_Items("OBJ_Scroll_BlackTentacles");
+DB_Rare_Items("OBJ_Scroll_Banishment");
+DB_Rare_Items("OBJ_Scroll_Blight");
+DB_Rare_Items("OBJ_Scroll_Blink");
+DB_Rare_Items("OBJ_Scroll_Confusion");
+DB_Rare_Items("UND_MonkAmulet_Amulet");
+DB_Rare_Items("UND_MyconidAmulet_Evil");
+DB_Rare_Items("UND_MyconidAmulet_Good");
+DB_Rare_Items("UND_DeadInWater_CallarduranTrinket");
+DB_Rare_Items("UND_Tower_AmuletDetectThoughts");
+DB_Rare_Items("OBJ_Scroll_Counterspell");
+DB_Rare_Items("OBJ_Scroll_HypnoticPattern");
+DB_Rare_Items("OBJ_ArrowOfDispelling");
+DB_Rare_Items("OBJ_Scroll_GlyphOfWarding");
+DB_Rare_Items("ARM_ChainMail_Body_2");
+DB_Rare_Items("MAG_Psychic_MentalFatigue_Cape");
+DB_Rare_Items("QUEST_LOW_Bhaal_Amulet");
+DB_Rare_Items("ARM_Splint_Body_2");
+DB_Rare_Items("ARM_Plate_Body_2");
+DB_Rare_Items("MAG_PHB_ElvenChain_Armor");
+DB_Rare_Items("ARM_Breastplate_Body_2");
+DB_Rare_Items("MAG_PHB_CloakOfDisplacement_Cloak");
+DB_Rare_Items("MAG_Critical_ArcanicCritical_Gloves");
+DB_Rare_Items("MAG_Critical_BolsteringCritical_Armor");
+DB_Rare_Items("MAG_Critical_Force_Gloves");
+DB_Rare_Items("MAG_TerrainWalkers_Boots");
+DB_Rare_Items("ARM_StuddedLeather_Body_Drow");
+DB_Rare_Items("ARM_BootsOfSpeed");
+DB_Rare_Items("ARM_CircletOfBlasting");
+DB_Rare_Items("ARM_HeadbandOfIntellect");
+DB_Rare_Items("ARM_RingOfPoisonResistance");
+DB_Rare_Items("CRE_MAG_Psychic_Githborn_Circlet");
+DB_Rare_Items("MAG_LC_TheAmplifier_Amulet");
+DB_Rare_Items("MAG_Githborn_MagicEating_HalfPlate");
+DB_Rare_Items("MAG_FlamingFist_Flaming_Shield");
+DB_Rare_Items("MAG_Harpers_RingOfTwilight");
+DB_Rare_Items("ARM_RingMail_Body_2");
+DB_Rare_Items("MAG_Harpers_JhannylGloves");
+DB_Rare_Items("MAG_Harpers_ArmorOfShadows");
+DB_Rare_Items("MAG_Illithid_MindTax_Amulet");
+DB_Rare_Items("OBJ_Scroll_Haste");
+DB_Rare_Items("MAG_Illithid_CharmPerson_Ring");
+DB_Rare_Items("MAG_Illithid_Carapace_Armor");
+DB_Rare_Items("MAG_Illithid_Carapace_Gloves");
+DB_Rare_Items("MAG_Illithid_Regen_Circlet");
+DB_Rare_Items("MAG_Myrkulites_CircletOfMyrkul_Circlet");
+DB_Rare_Items("MAG_Myrkulites_RingofMyrkul_Ring");
+DB_Rare_Items("MAG_Harpers_HarpersAmulet");
+DB_Rare_Items("MAG_FlamingFist_BattleWizardGloves");
+DB_Rare_Items("MAG_Monk_Magic_Boots");
+DB_Rare_Items("MAG_FlamingFist_ScoutRing");
+DB_Rare_Items("MAG_Monk_Magic_Gloves");
+DB_Rare_Items("MAG_Monk_Magic_Hat");
+DB_Rare_Items("MAG_CQCaster_CloseRangedSpellMastery_Gloves");
+DB_Rare_Items("MAG_Critical_CriticalSwiftness_Boots");
+DB_Rare_Items("ARM_HalfPlate_Body_2");
+DB_Rare_Items("MAG_PHB_PeriaptofWoundClosure_Amulet");
+DB_Rare_Items("OBJ_Scroll_FeignDeath");
+DB_Rare_Items("MAG_PHB_Sentinel_Shield");
+DB_Rare_Items("MAG_Poison_PoisonExposure_Gloves");
+DB_Rare_Items("MAG_Poison_InflictPoisonHealSelf_Cloak");
+DB_Rare_Items("OBJ_Scroll_Fear");
+DB_Rare_Items("OBJ_Scroll_Fly");
+DB_Rare_Items("OBJ_Scroll_GaseousForm");
+DB_Rare_Items("ARM_ScaleMail_Body_2");
+DB_Rare_Items("MAG_PHB_Ring_Of_Protection");
+DB_Rare_Items("MAG_Shadow_StealthBonusWhileObscured_Armor");
+DB_Rare_Items("MAG_LC_Cyric_FearImmunity_Amulet");
+DB_Rare_Items("OBJ_Scroll_Fireball");
+DB_Rare_Items("ARM_Shield_1");
+DB_Rare_Items("MAG_CQCaster_ArcaneChargeAfterDash_Boots");
+DB_Rare_Items("MAG_Gortash_HeavyCrossbow");
+DB_Rare_Items("MAG_LC_CazadorVampiric_Quarterstaff");
+DB_Rare_Items("MAG_Githborn_PsionicMovement_Boots");
+DB_Rare_Items("OBJ_Scroll_ConjureElemental");
+DB_Rare_Items("ALCH_Solution_Elixir_Meditation_Supreme");
+DB_Rare_Items("MAG_Githborn_MageHandSupport_Gloves");
+DB_Rare_Items("MAG_Fire_BonusActionOnFireSpell_Circlet");
+DB_Rare_Items("MAG_OfFeywildSparks_Ring");
+DB_Rare_Items("WYR_MonkAmulet_Amulet_AfterCombat");
+DB_Rare_Items("MAG_Monk_SoulRejunevation_Armor");
+DB_Rare_Items("MAG_LC_OfTheRam_Quarterstaff");
+DB_Rare_Items("OBJ_Scroll_Disintegrate");
+DB_Rare_Items("OBJ_Scroll_DominatePerson");
+DB_Rare_Items("OBJ_Scroll_Eyebite");
+DB_Rare_Items("MAG_BG_Sarevok_OfChaos_Greatsword");
+DB_Rare_Items("MAG_Bhaalist_Paralyzing_Dagger");
+DB_Rare_Items("MAG_Orthon_Hellfire_HandCrossbow");
+DB_Rare_Items("MAG_TheImpaler_Pike");
+DB_Rare_Items("MAG_Cunning_HandCrossbow");
+DB_Rare_Items("MAG_LowHP_BonusAction_Helmet");
+DB_Rare_Items("MAG_Greenstone_Amulet");
+DB_Rare_Items("MAG_RadiantLight_Morningstar");
+DB_Rare_Items("UNI_ARM_OfGiantHillStrength_Gloves");
+DB_Rare_Items("MAG_Justiciar_Scimitar");
+DB_Rare_Items("MAG_Bhaalist_Gloves");
+DB_Rare_Items("MAG_TheDestroyer_Maul");
+DB_Rare_Items("MAG_Bhaalist_Hat");
+DB_Rare_Items("MAG_Bhaalist_Armor");
+DB_Rare_Items("OBJ_Scroll_ChainLightning");
+DB_Rare_Items("MAG_Viconia_Mace");
+DB_Rare_Items("MAG_LC_Umberlee_Regeneration_Robe");
+DB_Rare_Items("OBJ_Scroll_CircleOfDeath");
+DB_Rare_Items("OBJ_Scroll_Cloudkill");
+DB_Rare_Items("OBJ_Scroll_ConeOfCold");
+DB_Rare_Items("LOW_OfWindrider_Amulet");
+DB_Rare_Items("MAG_Gortash_Gloves");
+DB_Rare_Items("MAG_PHB_OfSpeed_Scimitar");
+DB_Rare_Items("MAG_Duergar_Sword_KingsKnife");
+DB_Rare_Items("UNI_Cazador_RitualDagger");
+DB_Rare_Items("UNI_DarkJusticiarArmor_HalfPlate");
+DB_Rare_Items("MAG_Finesse_Glaive");
+DB_Rare_Items("MAG_LC_Nymph_Cloak");
+DB_Rare_Items("MAG_EndGame_Plate_Armor");
+DB_Rare_Items("MAG_WATCHER_Human_Crossbow");
+DB_Rare_Items("MAG_WATCHER_Human_Greataxe");
+DB_Rare_Items("MAG_SpiritualStand_Greataxe");
+DB_Rare_Items("OBJ_Scroll_Sunbeam");
+DB_Rare_Items("OBJ_Bomb_Sunflash");
+DB_Rare_Items("OBJ_Scroll_Telekinesis");
+DB_Rare_Items("MAG_Primeval_Silver_Longsword");
+DB_Rare_Items("MAG_PHB_OfLifestealing_Shortsword");
+DB_Rare_Items("MAG_WYRM_UndeadProtector_Robe");
+DB_Rare_Items("MAG_Infernal_Metal_Gloves");
+DB_Rare_Items("MAG_EndGameCaster_Robe");
+DB_Rare_Items("OBJ_Scroll_WallOfIce");
+DB_Rare_Items("OBJ_Scroll_WallOfStone");
+DB_Rare_Items("MAG_Infernal_Metal_Boots");
+DB_Rare_Items("UNI_DarkJusticiar_Helmet");
+DB_Rare_Items("MAG_BG_BlightBringer_Shortbow");
+DB_Rare_Items("MAG_DeadShot_Longbow");
+DB_Rare_Items("MAG_PoR_OfVigilance_Halberd");
+DB_Rare_Items("MAG_GreaterNecromancy_Staff");
+DB_Rare_Items("MAG_EndGame_HalfPlate");
+DB_Rare_Items("MAG_OfSpellPower_Quarterstaff");
+DB_Rare_Items("MAG_Warlock_Twinned_Gloves");
+DB_Rare_Items("MAG_Monk_SoulPerception_Hat");
+DB_Rare_Items("MAG_LC_Jannath_Hat");
+DB_Rare_Items("FOR_NightWalkers");
+DB_Rare_Items("MAG_ArcaneAbsorption_Dagger");
+DB_Rare_Items("MAG_PHB_DwarvenThrower_Warhammer");
+DB_Rare_Items("OBJ_Scroll_FleshToStone");
+DB_Rare_Items("OBJ_Scroll_FreezingSphere");
+DB_Rare_Items("OBJ_Scroll_GlobeOfInvulnerability");
+DB_Rare_Items("OBJ_Scroll_HoldMonster");
+DB_Rare_Items("MAG_PHB_OfEvasion_Ring");
+DB_Rare_Items("MAG_Zhentarim_Demonspirit_Gloves");
+DB_Rare_Items("MAG_OfArcanicDefense_Robe");
+DB_Rare_Items("ORI_Wyll_Infernal_Rapier");
+DB_Rare_Items("OBJ_Scroll_IrresistibleDance");
+DB_Rare_Items("ALCH_Solution_Potion_Rest_Greater");
+DB_Rare_Items("OBJ_Scroll_PlanarBinding");
+DB_Rare_Items("MAG_Infernal_Metal_Helmet");
+DB_Rare_Items("MAG_Steadfast_Shield");
+DB_Rare_Items("MAG_EndGame_StuddedLeather_Armor");
+DB_Rare_Items("OBJ_Scroll_Seeming");
+DB_Rare_Items("MAG_LC_DrowSpider_Gloves");
+DB_Rare_Items("MAG_BG_Sarevok_OfChaos_Greatsword_NoPassives");
+DB_Rare_Items("LOW_OskarsBeloved_TorchOfRevocation");
+DB_Rare_Items("MAG_LC_Wave_Trident");
+DB_Rare_Items("SCE_KhalidsGift");
+DB_Rare_Items("MOO_Ketheric_Armor");
+DB_Rare_Items("MAG_OB_Paladin_DeathKnight_Armor");
+DB_Rare_Items("MAG_OB_Paladin_DeathKnight_Shield");
+DB_Rare_Items("OBJ_PurpleWormPoison");
+DB_Rare_Items("MAG_BG_OfDevotion_Shield");
+DB_Rare_Items("UNI_Poison_Brewer");
+DB_Rare_Items("UNI_Ravengard_Plate");
+DB_Rare_Items("MAG_BG_Gargoyle_Boots");
+DB_Rare_Items("MAG_Orpheus_Ring");
+DB_Rare_Items("MAG_ParalyzingRay_Ring");
+DB_Rare_Items("MAG_Taras_Collar_Amulet");
+DB_Rare_Items("MAG_EndGame_Metal_Boots");
+DB_Rare_Items("MAG_Hat_Barbarian_Hide");
+DB_Rare_Items("MAG_Restoration_SpellSlotRestoration_Amulet");
+DB_Rare_Items("MAG_BG_OfTheMasters_Legacy_Gauntlet");
+DB_Rare_Items("MAG_BG_OfDexterity_Gloves");
+DB_Rare_Items("MAG_Critical_HidingCritical_Cloak");
+DB_Rare_Items("MAG_OfWarMaster_Gloves");
+DB_Rare_Items("OBJ_ArrowOfAberrationSlaying");
+DB_Rare_Items("OBJ_ArrowOfDragonSlaying");
+DB_Rare_Items("MAG_GleamingSorcery_Hat");
+DB_Rare_Items("OBJ_Dye_WhiteRed");
+DB_Rare_Items("MAG_LuckySeven_Amulet");
+DB_Rare_Items("MAG_Cold_IncreaseColdDamageOnCast_Staff");
+DB_Rare_Items("MAG_Radiant_CrusaderMantle_Cloak");
+DB_Rare_Items("OBJ_Potion_Of_Psychic_Resistance");
+DB_Rare_Items("MAG_Druid_Magic_Leather_Armor");
+DB_Rare_Items("MAG_Druid_Moon_Magic_Leather_Armor");
+DB_Rare_Items("MAG_Druid_Land_Magic_Leather_Armor");
+DB_Rare_Items("MAG_Druid_Spore_Magic_Leather_Armor");
+DB_Rare_Items("MAG_BarbMonk_Cloth_Hat_A_2_Late");
+DB_Rare_Items("ORI_Wyll_Infernal_Robe");
+DB_Rare_Items("MAG_BarbMonk_Cloth_A_2_Late");
+DB_Rare_Items("MAG_EndGameCaster_Circlet");
+DB_Rare_Items("MAG_EndGameCaster_Hood");
+DB_Rare_Items("MAG_EndGameCaster_Cloak");
+DB_Rare_Items("MAG_BarbMonk_Cloth_B_1");
+DB_Rare_Items("MAG_Druid_Late_Hide_Armor_2");
+DB_Rare_Items("MAG_Selunite_Isobel_Robe");
+DB_Rare_Items("MAG_SpectatorEye_Amulet");
+DB_Rare_Items("MAG_Druid_Wildshape_Hat");
+DB_Rare_Items("MAG_CharismaCaster_Robe");
+DB_Rare_Items("MAG_Barbarian_BoneSpike_Shoes");
+DB_Rare_Items("MAG_Barbarian_BoneSpike_Gloves");
+DB_Rare_Items("MAG_Barbarian_BoneSpike_Helmet");
+DB_Rare_Items("MAG_Barbarian_BoneSpike_Armor");
+DB_Rare_Items("MAG_Arcanist_Gloves");
+DB_Rare_Items("OBJ_Potion_Of_Invulnerability");
+DB_Rare_Items("ARM_Shield_2");
+DB_Rare_Items("MAG_OfRevivify_Gloves");
+DB_Rare_Items("OBJ_ArrowOfHumanoidSlaying");
+DB_Rare_Items("MAG_FlamingFist_Flame_Armor");
+DB_Rare_Items("MAG_Critical_CriticalExecution_Ring");
+DB_Rare_Items("OBJ_Dye_Azure");
+DB_Rare_Items("MAG_OfGreaterSorcery_Amulet");
+DB_Rare_Items("UNI_ARM_Sarevok_Horned_Helmet");
+DB_Rare_Items("UNI_ARM_Sarevok_Armor");
+DB_Rare_Items("OBJ_Dye_Maroon");
+DB_Rare_Items("OBJ_Runepowder_Timebomb");
+DB_Rare_Items("UND_OBJ_Runepowder_Barrel");
+DB_Rare_Items("DLC_OBJ_Dye_Larian");
+DB_Rare_Items("OBJ_Dye_Purple");
+DB_Rare_Items("MAG_MissileProtection_Shield");
+DB_Rare_Items("OBJ_Dye_IceCream");
+DB_Rare_Items("MAG_LegendaryEvasion_Amulet");
+DB_Rare_Items("MAG_ofGreaterHealth_Amulet");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff1_OnDamage_Helmet");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff2_OnDamage_SplintMail");
+DB_Rare_Items("MAG_FlamingFist_StaffOfFire");
+DB_Rare_Items("LOW_OskarsBeloved_TorchOfTrueRevocation");
+DB_Rare_Items("MAG_MeleeDebuff_AttackDebuff1_OnDamage_ScaleMail");
+DB_Rare_Items("OBJ_Dye_RichRed");
+DB_Rare_Items("OBJ_Dye_RoyalBlue");
+DB_Rare_Items("MAG_OfTheDevout_Amulet");
+DB_Rare_Items("MAG_LC_RadiantLight_Rapier");
+DB_Rare_Items("MAG_OfUndeadServant_Ring");
+DB_Rare_Items("MAG_Vampiric_Gloves");
+DB_Rare_Items("OBJ_Dye_IceCream_02");
+DB_Rare_Items("UNI_LOW_CurriculumOfStrategyScroll");
+DB_Rare_Items("MAG_Bonded_Shield");
+DB_Rare_Items("MAG_PHB_OfRegeneration_Ring");
+DB_Rare_Items("UNI_TWN_Scroll_FleshToGold");
+DB_Rare_Items("MAG_BonusAttack_AgainstMarked_Circlet");
+DB_Rare_Items("UNI_LOW_BestialCommunionScroll");
+DB_Rare_Items("OBJ_Dye_BlackPink");
+DB_Rare_Items("MAG_Warlock_Quickened_Gloves");
+DB_Rare_Items("UNI_LOW_DethroneScroll");
+DB_Rare_Items("OBJ_Dye_Green_02");
+DB_Rare_Items("MAG_TheCrimson_Shortsword");
+DB_Rare_Items("MAG_OfTheShapeshifter_Mask");
+DB_Rare_Items("MAG_TheClover_Scimitar");
+DB_Rare_Items("LOW_OrphicHammer");
+DB_Rare_Items("MAG_TheDueller_Rapier");
+DB_Rare_Items("MAG_TheVictory_Longbow");
+DB_Rare_Items("MAG_GreaterSilver_Greatsword");
+DB_Rare_Items("MAG_Infernal_Plate_Armor");
+DB_Rare_Items("MAG_TheBulwark_Shield");
+DB_Rare_Items("MAG_TheThorns_Trident");
+DB_Rare_Items("LOW_OskarsBeloved_Masterpiece");
+DB_Rare_Items("MAG_PHB_OfSoulCatching_Gloves");
+DB_Rare_Items("MAG_Giantslayer_Greatsword");
+DB_Rare_Items("LOW_OskarsBeloved_PlayerPortrait");
+DB_Rare_Items("LOW_MysteryHouse_DnDFakeObject");
+DB_Rare_Items("OBJ_ElixirOfImmortality");
+DB_Rare_Items("LOW_SorcerousSundries_RareTome");
+DB_Rare_Items("LOW_OskarsBeloved_CounterfeitPortrait");
+DB_Rare_Items("CRE_BloodOfLathander");
+DB_Rare_Items("MAG_PHB_ScarabOfProtection_Amulet");
+DB_Rare_Items("MAG_SHA_SeluneBlessing_Spear");
+DB_Rare_Items("MAG_SHA_SharBlessing_Spear");
+DB_Rare_Items("MAG_WYRM_OfBalduran_Helmet");
+DB_Rare_Items("MAG_WYR_Orin_Bhaalist_Dagger");
+DB_Rare_Items("MAG_Cleric_Devotees_Mace");
+DB_Rare_Items("LOW_PendulumOfMalagard");
+DB_Rare_Items("MAG_TheChromatic_Staff");
+// -------------------------------------------------------------------------------------------------------
+
+// ------------------------------
+// LevelGameplayReady Apply AURA 
+// ------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_Avatars(_Leader)
+AND
+NOT HasAppliedStatus((GUIDSTRING)_Leader, "LOOTMASTER_AURA", 1)
+THEN
+ApplyStatus(_Leader, "LOOTMASTER_AURA", -1.0, 1, _Leader);
+// -------------------------------------------------------------
+
+
+// ------------------------------
+// LevelGameplayReady add Spells 
+// ------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_Avatars(_Leader)
+THEN
+AddSpell((CHARACTER)_Leader, "Shout_LOOT_MASTER_SPELL_CONTAINER", 1, 1);
+AddSpell((CHARACTER)_Leader, "Shout_LOOT_MASTER_ALL_STAND_ALONE", 0, 0);
+// ------------------------------------------------------------
+
+
+// --------------------------------------
+// LevelGameplayReady add Backpack Rares
+// --------------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_LootMaster_Rares_Backpack_Template(_RaresBackpack)
+AND
+DB_Avatars(_Leader) // Leader
+AND
+NOT DB_LootMaster_Rares_Backpack_Item(_)
+THEN
+TemplateAddTo((ITEMROOT)_RaresBackpack, (GUIDSTRING)_Leader, 1, 1);
+// --------------------------------------------------------------------------
+
+
+// --------------------------------------
+// LevelGameplayReady add Backpack Commons
+// --------------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_LootMasterBackpack_Template(_CommonBackpack)
+AND
+DB_Avatars(_Leader) // Leader
+AND
+NOT DB_LootMasterBackpack_Item(_)
+THEN
+TemplateAddTo((ITEMROOT)_CommonBackpack, (GUIDSTRING)_Leader, 1, 1);
+// --------------------------------------------------------------------------
+
+
+// ------------------------------------------------
+// LevelGameplayReady move backpack Rares to leader
+// ------------------------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_Avatars(_Leader) // Leader
+AND
+DB_LootMaster_Rares_Backpack_Item(_Item)
+AND
+NOT IsInInventoryOf((GUIDSTRING)_Item, (GUIDSTRING)_Leader, 1)
+THEN
+ToInventory((GUIDSTRING)_Item, (GUIDSTRING)_Leader, 1, 1, 1);
+// ---------------------------------------------------------------
+
+
+// ------------------------------------------------
+// LevelGameplayReady move backpack Commons to leader
+// ------------------------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_Avatars(_Leader) // Leader
+AND
+DB_LootMasterBackpack_Item(_Item)
+AND
+NOT IsInInventoryOf((GUIDSTRING)_Item, (GUIDSTRING)_Leader, 1)
+THEN
+ToInventory((GUIDSTRING)_Item, (GUIDSTRING)_Leader, 1, 1, 1);
+// ---------------------------------------------------------------
+
+
+// ------------------------------------------------------------
+// LevelGameplayReady add backpack Rares to leader if not exist
+// ------------------------------------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_LootMaster_Rares_Backpack_Template(_RaresBackpack)
+AND
+DB_Avatars(_Leader) // Leader
+AND
+DB_LootMaster_Rares_Backpack_Item(_Item)
+AND
+NOT Exists(_Item, 1 ) // Backpack destroyed ?
+THEN
+TemplateAddTo((ITEMROOT)_RaresBackpack, (GUIDSTRING)_Leader, 1, 1);
+// ---------------------------------------------------------------
+
+// ------------------------------------------------------------
+// LevelGameplayReady add backpack Commons to leader if not exist
+// ------------------------------------------------------------
+IF
+LevelGameplayReady((STRING)_LevelName, _)
+AND
+_LevelName != "SYS_CC_I"
+AND
+DB_LootMasterBackpack_Template(_CommonBackpack)
+AND
+DB_Avatars(_Leader) // Leader
+AND
+DB_LootMasterBackpack_Item(_Item)
+AND
+NOT Exists(_Item, 1 ) // Backpack destroyed ?
+THEN
+TemplateAddTo((ITEMROOT)_CommonBackpack, (GUIDSTRING)_Leader, 1, 1);
+// ---------------------------------------------------------------
+
+
+
+// -----------------------------------------------------
+// CharacterLeftParty transfer backpack Rares to Leader
+// ------------------------------------------------------
+IF
+CharacterLeftParty((CHARACTER)_Character)
+AND
+DB_LootMaster_Rares_Backpack_Item(_RaresBackpackItem)
+AND
+IsInInventoryOf((GUIDSTRING)_RaresBackpackItem, (GUIDSTRING)_Character, 1)
+AND
+DB_Avatars(_Leader) // Leader
+THEN
+ToInventory((GUIDSTRING)_RaresBackpackItem, (GUIDSTRING)_Leader, 1, 1, 1);
+// ---------------------------------------------------------------
+
+// -----------------------------------------------------
+// CharacterLeftParty transfer backpack Commons to Leader
+// ------------------------------------------------------
+IF
+CharacterLeftParty((CHARACTER)_Character)
+AND
+DB_LootMasterBackpack_Item(_CommonBackpackItem)
+AND
+IsInInventoryOf((GUIDSTRING)_CommonBackpackItem, (GUIDSTRING)_Character, 1)
+AND
+DB_Avatars(_Leader) // Leader
+THEN
+ToInventory((GUIDSTRING)_CommonBackpackItem, (GUIDSTRING)_Leader, 1, 1, 1);
+// ---------------------------------------------------------------
+
+
+// -------------------------------
+// TemplateAddedTo Backpack Rares
+// -------------------------------
+IF
+TemplateAddedTo((ROOT)_ObjectTemplate, (GUIDSTRING)_Object, (GUIDSTRING)_InventoryHolder, _)
+AND
+DB_LootMaster_Rares_Backpack_Template(_RaresBackpack)
+AND
+_ObjectTemplate == _RaresBackpack
+THEN
+SysClear("DB_LootMaster_Rares_Backpack_Item",1);
+DB_LootMaster_Rares_Backpack_Item((ITEM)_Object);
+// ----------------------------------------------
+
+// -------------------------------
+// TemplateAddedTo Backpack Commons
+// -------------------------------
+IF
+TemplateAddedTo((ROOT)_ObjectTemplate, (GUIDSTRING)_Object, (GUIDSTRING)_InventoryHolder, _)
+AND
+DB_LootMasterBackpack_Template(_CommonBackpack)
+AND
+_ObjectTemplate == _CommonBackpack
+THEN
+SysClear("DB_LootMasterBackpack_Item",1);
+DB_LootMasterBackpack_Item((ITEM)_Object);
+// ----------------------------------------------
+
+
+
+// -------------------------------
+// StatusApplied "LOOT_INVENTORY"
+// -------------------------------
+IF
+StatusApplied((GUIDSTRING)_InventoryHolder, (STRING)_Status, (GUIDSTRING)_Causee, _)
+AND
+_Status == "LOOT_INVENTORY"
+AND
+QRY_IsCorpseOrContainer((GUIDSTRING)_InventoryHolder)
+AND
+DB_TAG_IsInventoryEmpty(_Tag)
+AND
+GetHostCharacter(_Character) 
+THEN
+DebugText(_Character,"Looting Items...");
+SysClear("DB_Looted_InventoryItems",2);
+SysClear("DB_Consumables",2);
+IterateInventory((GUIDSTRING)_InventoryHolder, "OnLootItems", "LootInventoryDone");
+SetTag((GUIDSTRING)_InventoryHolder, _Tag);
+PROC_DisarmUnlockOpen(_InventoryHolder);
+PROC_Play_Green_Circle_Effect(_InventoryHolder);
+// ---------------------------------------------------------------------------------
+
+
+// -------------------------
+// StatusApplied "SET_TAGS" 
+// -------------------------
+IF
+StatusApplied((GUIDSTRING)_Object, (STRING)_Status, (GUIDSTRING)_Causee, _)
+AND
+_Status == "SET_TAGS"
+AND
+QRY_IsCorpseOrContainer((GUIDSTRING)_Object)
+THEN
+DB_Noop(1);
+// ------------------------------------------------------------------------------
+
+// -----------------------------------
+// StatusApplied "REMOVE_LOOT_MASTER" 
+// -----------------------------------
+IF
+StatusApplied((GUIDSTRING)_Object, (STRING)_Status, (GUIDSTRING)_Causee, _)
+AND
+_Status == "REMOVE_LOOT_MASTER"
+AND
+IsPlayer((CHARACTER)_Object, 1)
+AND
+DB_LootMaster_Message1(_Question1)
+THEN
+OpenMessageBoxChoice(_Object, _Question1, "Cancel", "Remove");
+// --------------------------------------------------------------------------
+
+
+// ------------------------------------------
+// MessageBoxChoiceClosed ask to remove mod
+// ------------------------------------------
+IF
+MessageBoxChoiceClosed((CHARACTER)_Character, (STRING)_Message, (STRING)_ResultChoice)
+AND
+DB_LootMaster_Message1(_Question1)
+AND
+_Message == _Question1
+AND
+_ResultChoice == "Remove"
+AND
+DB_Avatars(_Leader)
+AND
+DB_LootMaster_Rares_Backpack_Template(_RaresItemTemplate)
+AND
+DB_LootMaster_Rares_Backpack_Item(_RaresItem)
+AND
+DB_LootMasterBackpack_Template(_CommonsItemTemplate)
+AND
+DB_LootMasterBackpack_Item(_CommonsItem)
+AND
+DB_LootMaster_Message2(_Question2)
+THEN
+RequestDelete(_RaresItem);
+RequestDelete(_CommonsItem);
+TemplateRemoveFromParty((ITEMROOT)_RaresItemTemplate, (CHARACTER)_Leader, 4);
+TemplateRemoveFromParty((ITEMROOT)_CommonsItemTemplate, (CHARACTER)_Leader, 4);
+RemoveStatus(_Leader, "LOOTMASTER_AURA");
+RemoveSpell((CHARACTER)_Leader, "Shout_LOOT_MASTER_SPELL_CONTAINER", 1);
+OpenMessageBox((CHARACTER)_Leader, _Question2);
+AutoSave();
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+// -------------------
+// KilledBy apply Tags
+// -------------------
+IF
+KilledBy((CHARACTER)_Defender, (GUIDSTRING)_AttackOwner, (GUIDSTRING)_Attacker, _)
+AND
+DB_Avatars(_Leader) // Leader
+AND
+QRY_IsCorpseOrContainer((GUIDSTRING)_Defender)
+THEN
+SetCharacterLootable((CHARACTER)_Defender, 1);
+UseSpell((GUIDSTRING)_Attacker, "Shout_LOOT_MASTER_CORPSES_AUTO",_Defender);
+// --------------------------------------------------------------------------------
+
+
+
+// ------------------------------------------------------------------------------
+// EntityEvent "OnLootItems" - Iterate Inventory add to DB_Looted_InventoryItems
+// ------------------------------------------------------------------------------
+IF
+EntityEvent((GUIDSTRING)_Object, (STRING)_Event)
+AND
+_Event == "OnLootItems"
+AND
+IsItem(_Object, 1)
+AND
+NOT IsDestroyed((ITEM)_Object, 1)
+AND
+GetStackAmount((ITEM)_Object, (INTEGER)_ExactItemAmount, (INTEGER)_TotalAmount)
+THEN
+DB_Looted_InventoryItems((ITEM)_Object, _TotalAmount);
+// -----------------------------------------------------------------
+
+
+// ---------------------------------------------------
+// EntityEvent "InventoryDone" IterateInventory Rares
+// ---------------------------------------------------
+IF
+EntityEvent((GUIDSTRING)_Object, (STRING)_Event)
+AND
+_Event == "LootInventoryDone"
+AND
+DB_LootMaster_Rares_Backpack_Item(_RaresBackpackItem)
+AND
+DB_Looted_InventoryItems(_Item, _TotalAmount)
+AND
+GetStatString((GUIDSTRING)_Item, _Statname)
+AND 
+DB_Rare_Items(_Statname)
+THEN
+ToInventory((ITEM)_Item, (GUIDSTRING)_RaresBackpackItem, _TotalAmount , 0, 1);
+// --------------------------------------------------------------------------------
+
+
+// --------------------------------------------------------
+// EntityEvent "InventoryDone" IterateInventory Story Item
+// --------------------------------------------------------
+IF
+EntityEvent((GUIDSTRING)_Object, (STRING)_Event)
+AND
+_Event == "LootInventoryDone"
+AND
+DB_LootMaster_Rares_Backpack_Item(_RaresBackpackItem)
+AND
+DB_Looted_InventoryItems(_Item, _TotalAmount)
+AND
+IsStoryItem(_Item, 1)
+THEN
+ToInventory((ITEM)_Item, (GUIDSTRING)_RaresBackpackItem, _TotalAmount , 0, 1);
+// --------------------------------------------------------------------------------
+
+// ----------------------------------------------------------------------
+// EntityEvent "InventoryDone" IterateInventory Commons and common Items
+// ----------------------------------------------------------------------
+IF
+EntityEvent((GUIDSTRING)_Object, (STRING)_Event)
+AND
+_Event == "LootInventoryDone"
+AND
+DB_LootMasterBackpack_Item(_CommonBackpackItem)
+AND
+DB_Looted_InventoryItems(_Item, _TotalAmount)
+AND
+GetStatString((GUIDSTRING)_Item, _Statname)
+AND
+NOT IsSubstring(_Statname, "Underwear", 1)
+AND
+NOT IsSubstring(_Statname, "Vanity_Body", 1)
+AND 
+NOT DB_Rare_Items(_Statname)
+THEN
+ToInventory((ITEM)_Item, (GUIDSTRING)_CommonBackpackItem, _TotalAmount , 0, 1);
+// ----------------------------------------------------------------------------
+
+
+
+// ----------------------------------------------------
+// AddedTo removes Weight from Items in Backpack Rares
+// ----------------------------------------------------
+IF
+AddedTo((ITEM)_Object, (GUIDSTRING)_InventoryHolder, _)
+AND
+GetStatString(_InventoryHolder, _StatName)
+AND
+_StatName == "OBJ_GEN_LootMaster_Rares_Backpack"
+AND
+NOT HasActiveStatus((GUIDSTRING)_Object, "ITEM_ZERO_WEIGHT", 1)
+AND
+GetHostCharacter(_Character)
+THEN
+ApplyStatus((ITEM)_Object, "ITEM_ZERO_WEIGHT", -1.0, 1, (GUIDSTRING)_InventoryHolder);
+// ------------------------------------------------------------------------------------
+
+
+// ----------------------------------------------------
+// AddedTo removes Weight from Items in Backpack Commons
+// ----------------------------------------------------
+IF
+AddedTo((ITEM)_Object, (GUIDSTRING)_InventoryHolder, (STRING)_AddType)
+AND
+_AddType != "Treasure"
+AND
+GetStatString(_InventoryHolder, _StatName)
+AND
+_StatName == "OBJ_GEN_LootMaster_Backpack"
+AND
+NOT HasActiveStatus((GUIDSTRING)_Object, "ITEM_ZERO_WEIGHT", 1)
+AND
+GetHostCharacter(_Character)
+THEN
+ApplyStatus((ITEM)_Object, "ITEM_ZERO_WEIGHT", -1.0, 1, (GUIDSTRING)_InventoryHolder);
+// ------------------------------------------------------------------------------------
+
+// ----------------------------------------------------
+// AddedTo checks for treasure items after dead
+// ----------------------------------------------------
+IF
+AddedTo((GUIDSTRING)_Object, (GUIDSTRING)_InventoryHolder, (STRING)_AddType)
+AND
+_AddType == "Treasure"
+AND
+IsDead((CHARACTER)_InventoryHolder, 1)
+AND
+DB_TAG_IsCorpse(_IsCorpseTag)
+AND
+IsTagged(_InventoryHolder, _IsCorpseTag, 1)
+AND
+IsItem(_Object, 1)
+AND
+NOT IsDestroyed((ITEM)_Object, 1)
+AND
+GetStackAmount((ITEM)_Object, (INTEGER)_ExactItemAmount, (INTEGER)_TotalAmount)
+THEN
+SysClear("DB_Looted_InventoryItems",2);
+IterateInventory((GUIDSTRING)_InventoryHolder, "OnLootItems", "LootInventoryDone");
+PROC_Play_Green_Circle_Effect(_InventoryHolder);
+// --------------------------------------------------------------------------------------
+
+
+
+// ----------------------------------------------------------
+// RemovedFrom restore weight to Items out of Backpack Rares
+// ----------------------------------------------------------
+IF
+RemovedFrom((ITEM)_Object, (GUIDSTRING)_InventoryHolder)
+AND
+GetStatString(_InventoryHolder, _StatName)
+AND
+_StatName == "OBJ_GEN_LootMaster_Rares_Backpack"
+AND
+HasActiveStatus((GUIDSTRING)_Object, "ITEM_ZERO_WEIGHT", 1)
+AND
+GetHostCharacter(_Character)
+THEN
+RemoveStatus((ITEM)_Object, "ITEM_ZERO_WEIGHT", (GUIDSTRING)_InventoryHolder);
+// --------------------------------------------------------------------------------
+
+// ----------------------------------------------------------
+// RemovedFrom restore weight to Items out of Backpack Commons
+// ----------------------------------------------------------
+IF
+RemovedFrom((ITEM)_Object, (GUIDSTRING)_InventoryHolder)
+AND
+GetStatString(_InventoryHolder, _StatName)
+AND
+_StatName == "OBJ_GEN_LootMaster_Backpack"
+AND
+HasActiveStatus((GUIDSTRING)_Object, "ITEM_ZERO_WEIGHT", 1)
+AND
+GetHostCharacter(_Character)
+THEN
+RemoveStatus((ITEM)_Object, "ITEM_ZERO_WEIGHT", (GUIDSTRING)_InventoryHolder);
+// --------------------------------------------------------------------------------
+
+
+// --------------------------------------------------------------------------------
+// ReadyCheckPassed "WaypointTravel_RegionSwap" transfer to leader Rares Backpack
+// --------------------------------------------------------------------------------
+IF
+ReadyCheckPassed((STRING)_Id)
+AND
+_Id == "WaypointTravel_RegionSwap"
+AND
+DB_Avatars(_Leader) // Leader
+AND
+DB_LootMaster_Rares_Backpack_Item(_RaresBackpackItem)
+AND
+NOT IsInInventoryOf((GUIDSTRING)_RaresBackpackItem, (GUIDSTRING)_Leader, 1)
+THEN
+ToInventory((GUIDSTRING)_RaresBackpackItem, (GUIDSTRING)_Leader, 1, 1, 1);
+// -----------------------------------------------------------------------------------
+
+// --------------------------------------------------------------------------------
+// ReadyCheckPassed "WaypointTravel_RegionSwap" transfer to leader Commons Backpack
+// --------------------------------------------------------------------------------
+IF
+ReadyCheckPassed((STRING)_Id)
+AND
+_Id == "WaypointTravel_RegionSwap"
+AND
+DB_Avatars(_Leader) // Leader
+AND
+DB_LootMasterBackpack_Item(_CommonBackpackItem)
+AND
+NOT IsInInventoryOf((GUIDSTRING)_CommonBackpackItem, (GUIDSTRING)_Leader, 1)
+THEN
+ToInventory((GUIDSTRING)_CommonBackpackItem, (GUIDSTRING)_Leader, 1, 1, 1);
+// -----------------------------------------------------------------------------------
+EXITSECTION
+
+ENDEXITSECTION

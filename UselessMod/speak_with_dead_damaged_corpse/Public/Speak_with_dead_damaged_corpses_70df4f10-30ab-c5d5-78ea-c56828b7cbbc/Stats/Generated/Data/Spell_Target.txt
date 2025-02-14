@@ -1,0 +1,40 @@
+# 新增条目 "Target_SpeakWithDead"（与死者交谈）
+new entry "Target_SpeakWithDead"
+type "SpellData"  # 数据类型为法术数据
+data "SpellType" "Target"  # 法术类型：目标型法术
+data "Level" "3"  # 法术等级：3级法术
+data "SpellSchool" "Necromancy"  # 法术流派：死灵法术
+data "AIFlags" "CanNotUse"  # AI标志：AI不可使用
+data "SpellProperties" "TARGET:ApplyStatus(SELF,SPEAK_WITH_DEAD_RECAST,100,-1);TARGET:ApplyStatus(SPEAK_WITH_DEAD,100,0)"  # 法术属性：为目标施加状态（对自己施加 SPEAK_WITH_DEAD_RECAST 状态，持续 100 回合，无限刷新；为目标施加 SPEAK_WITH_DEAD 状态，持续 100 回合，不刷新）
+data "TargetRadius" "9"  # 目标范围：9（施法者与目标之间的距离）
+data "Requirements" "!Combat"  # 施法条件：非战斗状态下可使用
+data "TargetConditions" "not Tagged('CORPSE_SPOKEN') and not Tagged('BLOCK_SPEAK_WITH_DEAD') and ((Dead() and not Tagged('BEAST') and not Tagged('UNDEAD') and not Player()) or Tagged('ALLOW_SPEAK_WITH_DEAD')) and not HasStatus('SILENCED')"  # 目标条件：
+    # - 目标未被交谈过（CORPSE_SPOKEN）
+    # - 目标未被阻止交谈（BLOCK_SPEAK_WITH_DEAD）
+    # - 目标是死者（Dead），且不是野兽（BEAST），不是不死生物（UNDEAD），不是玩家角色（Player），或者被标记为允许交谈（ALLOW_SPEAK_WITH_DEAD）
+    # - 目标未被沉默（SILENCED）
+data "Icon" "Spell_Necromancy_SpeakWithDead"  # 法术图标：死灵法术 - 与死者交谈
+data "DisplayName" "hd71e47bfg7e03g2f1cg48cfg04eacd2e1209;1"  # 法术名称（游戏内显示）
+data "Description" "h2b184bd0g4385gae7ag12a3g8d70b923cc59;1"  # 法术描述
+data "ExtraDescription" "h5d8073abgff38gaaf7g2a79gece4968046e9;1"  # 额外描述
+data "CastSound" "Spell_Cast_Utility_SpeakWithDead_L1to3"  # 施法音效
+data "TargetSound" "Spell_Impact_Utility_SpeakWithDead_L1to3"  # 目标音效
+data "VocalComponentSound" "Vocal_Component_SpeakWithDead"  # 语音组件音效
+data "PreviewCursor" "Cast"  # 预览光标：施法
+data "CastTextEvent" "Cast"  # 施法文本事件：施法
+data "InstrumentComponentImpactSound" "Instrument_Bard_Silence"  # 乐器组件音效：吟游诗人 - 沉默
+data "UseCosts" "ActionPoint:1;SpellSlotsGroup:1:1:3"  # 使用消耗：
+    # - 动作点：1
+    # - 法术位消耗：1级法术位，消耗1个
+data "RitualCosts" "ActionPoint:1"  # 仪式消耗：动作点1（用于仪式施法）
+data "SpellAnimation" "414bbf02-2918-4f01-83fb-1ddc7a588d88,,;,,;8252328a-66dd-4dc0-bbe0-00eea3204922,,;982d842b-5d44-4ef6-ab33-14d5ae514a50,,;0c5dcc83-fa78-41da-b6a5-440b5ea30936,,;,,;bea988a0-2ec5-40d8-a67e-ffbd7454bc53,,;,,;,,"  # 法术动画效果
+data "VerbalIntent" "Utility"  # 语音意图：实用型法术
+data "SpellFlags" "IsSpell;HasVerbalComponent;HasSomaticComponent"  # 法术标志：
+    # - 是法术
+    # - 有语音组件
+    # - 有手势组件
+data "MemoryCost" "1"  # 记忆消耗：1（占用1个法术记忆位）
+data "PrepareEffect" "5d4a5adb-db3a-47ed-9c29-b84e09425921"  # 施法准备效果
+data "CastEffect" "c582c3b6-2758-4d72-81f6-e45f07519a10"  # 施法效果
+data "TargetEffect" "e7b6ad82-c85a-40ac-9781-cb85f2dffb89"  # 目标效果
+

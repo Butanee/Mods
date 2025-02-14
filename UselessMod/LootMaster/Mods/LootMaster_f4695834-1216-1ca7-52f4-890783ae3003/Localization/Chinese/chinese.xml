@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<contentList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <content contentuid="h6b762dc4g9c11g7671g2a1fge70d20b47cbd" version="1">掠夺尸体</content>
+  <content contentuid="h2592f811g7c4bgbc06g6c97gffb99a4b96ad" version="1">掠夺尸体</content>
+  <content contentuid="h6ebdfeffgaa14g6a28ga0aag40c9518788f6" version="1">&lt;b&gt;掠夺尸体&lt;/b&gt;将施法者半径[1]英尺内的尸体。战利品将转移至&lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+  <content contentuid="h78745221gabdcg6242g2557g66d1a8cab8de" version="1">掠夺</content>
+  <content contentuid="h40400614gd1d8gb4c4g21e2g5db76d877b82" version="1">空库存</content>
+  <content contentuid="h9223a4f0g0b70g89bdg6faegcfffbc783aea" version="1">掠夺尸体已准备好lootet库存</content>
+  <content contentuid="hfd30c244gb981g590fgad45g72889af772a9" version="25">掠夺公共背包</content>
+  <content contentuid="ha52c1794gd41dg73ceg8a2eg4e00e9df9ce3" version="25">掠夺公共背包: 自动从尸体和容器中收集垃圾、普通物品和贵重物品，同时忽略梳妆服。</content>
+  <content contentuid="h53e0c3b6g43fag7e65gdd11g7e859d7206eb" version="1">掠夺容器</content>
+  <content contentuid="h0fd9ed9eg9943g3badg3016g7fe843677dae" version="1">&lt;b&gt;掠夺尸体 Spell&lt;/b&gt; 将施法者半径[1]英尺内的尸体和容器。战利品将转移至&lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+  <content contentuid="h6eed3c7egcf1fge7f5gd637g5c35cbe7fed4" version="1">掠夺所有</content>
+  <content contentuid="h47ea72f6g7c5cg99ceg6db7gb0234db6f0ff" version="1">&lt;b&gt;掠夺尸体 Spell&lt;/b&gt; 将施法者半径[1]英尺内的尸体。战利品将转移至&lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+  <content contentuid="he01deefcg0725gcb4fg6b65g163f4778865a" version="1">转变无信仰者</content>
+  <content contentuid="h2d17f568gad5dg150fgf42fg4bbffd31e08f" version="1">&lt;LSTag Type="Status" Tooltip="TURNED"&gt;Turn&lt;/LSTag&gt; nearby fey and fiends. They are forced to flee and cannot come close to you.</content>
+  <content contentuid="ha81ecb65ga1c6g537eg6d76ga7b06de06e43" version="1">是容器</content>
+  <content contentuid="h2af26bebgb855g5ef1gdde0g1fbe5491c633" version="1">掠夺尸体</content>
+  <content contentuid="hbafa9d2egd363ge35egd7edg888cbab5a45c" version="1">是尸体</content>
+  <content contentuid="hba9bde30g6904gf0a7ge896ga33871a6df3c" version="1">掠夺尸体</content>
+  <content contentuid="h1331e46dg913cg0e72g3f67g248b9abb3acc" version="1">掠夺尸体 Spells</content>
+  <content contentuid="hc7ceda95g5304gc198ge8e2g04da718b7f89" version="1">&lt;b&gt;选择一个抢劫选项：&lt;/b&gt;&lt;br&gt;&lt;b&gt;掠夺尸体&lt;/b&gt; -非盟友&lt;br&gt;&lt;b&gt;战利品容器&lt;/b&gt; -非空&lt;br&gt;&lt;b&gt;掠夺所有&lt;/b&gt; -尸体和容器&lt;br&gt;&lt;b&gt;删除Mod&lt;/b&gt; - unistall '掠夺尸体'</content>
+  <content contentuid="h99837978g2e32g03bag678egd4a0bc5680f4" version="1">移除Mod</content>
+  <content contentuid="h4e62a4a4g9b83g037cg6d1ag67cf489abf45" version="1">此法术将删除mod&lt;b&gt;'掠夺尸体'&lt;/b&gt; 并准备卸载。</content>
+  <content contentuid="h5778f557gb231g2bb7gc45bg5b790d4ebcce" version="1">掠夺所有</content>
+  <content contentuid="hd044d06bg030bga8f3g3e65gd9359cf93b7f" version="1">&lt;b&gt;掠夺尸体 Spell&lt;/b&gt; 将施法者半径[1]英尺内的尸体和容器。战利品将转移到&lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+  <content contentuid="h62904765g50b7g2df9gebd8g662443a0d4b7" version="1">掠夺容器</content>
+  <content contentuid="h4bc8fb44gdc12gdc7cgc1bfg10533b6002fb" version="1">&lt;b&gt;掠夺尸体 Spell&lt;/b&gt; 将施法者半径[1]英尺半径内的容器。战利品将转移到 &lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+  <content contentuid="h7e00a349g41f4ga6e5gb83age9f954a2a6b5" version="1">掠夺所有</content>
+  <content contentuid="hc6a969b6g233bge1fag5478g1c6bf80fdb11" version="1">&lt;b&gt;掠夺尸体 Spell&lt;/b&gt; 将施法者半径[1]英尺内的尸体和容器。战利品将转移至 &lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+  <content contentuid="h4eb5ce3fg8541g30afg718ag69161be52bd4" version="17">掠夺稀有背包</content>
+  <content contentuid="he8716a8cgb968gecbfg8754gc81e43b906e9" version="17">掠夺稀有背包: 自动从尸体和容器中收集稀有和与故事相关的物品，忽略虚荣的衣服。</content>
+  <content contentuid="h910540dag54aeg15ceg0d78g0a90e39a5d94" version="1">把战利品送到营地</content>
+  <content contentuid="h61878d1fg499cg0422g0576gc507f5218e1a" version="1">陷阱已解除武装</content>
+  <content contentuid="hfb1634eagab44g5d42g86f8g23a7bab555d8" version="1">解除锁定</content>
+  <content contentuid="hd10fe264gc939gd730gaee0gab7288cc6ce4" version="1">未找到翻译 (h5be0de07g87fcg4276g6f75g23765bac167e v1)</content>
+  <content contentuid="h8618c106g82c5gf356g44f7gb74c7aff3418" version="1">掠夺尸体s</content>
+  <content contentuid="h4af6401cg8212g7bb7gf8a8g3fe6e9e60791" version="1">The &lt;b&gt;掠夺尸体 Spell&lt;/b&gt;将施法者半径[1]英尺内的尸体。战利品将转移到&lt;b&gt;无重量掠夺背包.&lt;/b&gt;</content>
+</contentList>

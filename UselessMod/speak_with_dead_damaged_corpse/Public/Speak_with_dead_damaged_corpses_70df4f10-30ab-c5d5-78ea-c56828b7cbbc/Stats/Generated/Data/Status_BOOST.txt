@@ -1,0 +1,16 @@
+# 新增条目 "SPEAK_WITH_DEAD_RECAST"（与死者交谈 - 重铸）
+new entry "SPEAK_WITH_DEAD_RECAST"
+type "StatusData"  # 数据类型为状态数据
+data "StatusType" "BOOST"  # 状态类型：增强
+data "DisplayName" "h1873f04bge6f3ge53agd256gb2157edfc639;1"  # 显示名称（游戏内显示）
+data "Description" "he8477816g00d1g5904ga549g68650ae5f88b;1"  # 状态描述
+data "Icon" "Spell_Necromancy_RecastSpeakWithDead"  # 状态图标：死灵法术 - 与死者交谈（重铸）
+data "StackId" "SPEAK_WITH_DEAD_RECAST"  # 堆叠标识：用于标识该状态的唯一ID
+data "AuraRadius" "18"  # 光环半径：18（影响范围）
+data "AuraStatuses" "TARGET:IF(Tagged('HASSWDDIALOG') and Dead() and not Tagged('BEAST') and not Tagged('UNDEAD') and not Tagged('CORPSE_SPOKEN') and not Tagged('BLOCK_SPEAK_WITH_DEAD') and not Player()):ApplyStatus(SPEAK_WITH_DEAD_INTERESTING)"  # 光环状态：
+    # - 如果目标具有 "HASSWDDIALOG" 标签、已死亡、不是野兽、不是不死生物、未被交谈过、未被阻止交谈、不是玩家角色，则为目标施加 "SPEAK_WITH_DEAD_INTERESTING" 状态
+data "Boosts" "UnlockSpell(Target_SpeakWithDead_FreeRecast)"  # 增强效果：解锁法术 "Target_SpeakWithDead_FreeRecast"（与死者交谈 - 免费重铸）
+data "StatusPropertyFlags" "DisableOverhead;DisableCombatlog"  # 状态属性标志：
+    # - 禁用头顶图标
+    # - 禁用战斗日志
+data "StatusGroups" "SG_RemoveOnRespec"  # 状态组：在重置技能时移除该状态

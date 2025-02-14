@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<contentList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <content contentuid="hd71e47bfg7e03g2f1cg48cfg04eacd2e1209" version="1">Speak with Dead</content>
+  <content contentuid="h2b184bd0g4385gae7ag12a3g8d70b923cc59" version="1">Grant a semblance of life to a humanoid corpse, allowing it to answer up to 5 questions.</content>
+  <content contentuid="h5d8073abgff38gaaf7g2a79gece4968046e9" version="1">Skeletons and creatures killed with Acid, Fire, Lightning, Necrotic, or Radiant damage no longer have a mouth and can't be made to talk using this spell.&lt;br&gt;&lt;br&gt;Doesn't work on Undead. </content>
+  <content contentuid="h1873f04bge6f3ge53agd256gb2157edfc639" version="1">Recast Speak with Dead</content>
+  <content contentuid="he8477816g00d1g5904ga549g68650ae5f88b" version="1">Can recast Speak with Dead without expending a &lt;LSTag Tooltip="SpellSlot"&gt;spell slot&lt;/LSTag&gt;.</content>
+</contentList>

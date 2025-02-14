@@ -1,0 +1,8 @@
+new entry "UnarmedAttack"
+type "PassiveData"
+data "DisplayName" "h92231074g02b5g88e7g6037g75bdb56bd08b;1"
+data "Description" "h42e73366ga1c2g6cb5g9f47g3617a33b4f8d;1"
+data "Icon" "Spell_Necromancy_FalseLife"
+data "Properties" "Highlighted"
+data "Boosts" "UnlockSpell(Target_UnarmedAttack,Singular)"
+

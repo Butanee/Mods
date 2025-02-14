@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<contentList xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <content contentuid="hd71e47bfg7e03g2f1cg48cfg04eacd2e1209" version="1">亡者交谈</content>
+  <content contentuid="h2b184bd0g4385gae7ag12a3g8d70b923cc59" version="1">赋予类人尸体生命的外观，使其最多可以回答5个问题。</content>
+  <content contentuid="h5d8073abgff38gaaf7g2a79gece4968046e9" version="1">被酸、火、闪电、坏死或辐射伤害杀死的骨骼和生物不再有嘴，也无法使用此咒语说话.&lt;br&gt;&lt;br&gt;Doesn't work on Undead. </content>
+  <content contentuid="h1873f04bge6f3ge53agd256gb2157edfc639" version="1">亡者交谈</content>
+  <content contentuid="he8477816g00d1g5904ga549g68650ae5f88b" version="1">可以重铸"亡者交谈"而无需花费 &lt;LSTag Tooltip="SpellSlot"&gt;法术点&lt;/LSTag&gt;.</content>
+</contentList>

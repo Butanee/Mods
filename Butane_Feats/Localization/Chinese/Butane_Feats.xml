@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contentList>
+        <!-- 巨武器大师:全力一击 -->
+        <content contentuid="FB_GreatWeaponMaster_BonusDamage_Description" version="1">使用具有&lt;LSTag Tooltip="Proficiency"&gt;熟练项&lt;/LSTag&gt;的重型武器发动攻击时，&lt;LSTag Tooltip="AttackRoll"&gt;攻击掷骰&lt;/LSTag&gt;获得+5增值，且伤害+10。</content> 
+        <content contentuid="hea61c527gd53fg46fega454g2bc02f65d75f" version="1">发动&lt;LSTag Tooltip="MeleeWeaponAttack"&gt;近战武器攻击&lt;/LSTag&gt;时，如果造成&lt;LSTag Tooltip="CriticalHit"&gt;重击&lt;/LSTag&gt;或击杀生物，该回合你可以以&lt;LSTag Type="ActionResource" Tooltip="BonusActionPoint"&gt;附赠动作&lt;/LSTag&gt;再发动一次近战武器攻击。&lt;br&gt;&lt;br&gt;使用具有&lt;LSTag Tooltip="Proficiency"&gt;熟练项&lt;/LSTag&gt;的重型近战武器发动攻击时，&lt;LSTag Tooltip="AttackRoll"&gt;攻击掷骰&lt;/LSTag&gt;受到+5增值，且造成的伤害+10。</content>
+        <!-- 神射手：孤注一掷 -->
+        <content contentuid="FB_Sharpshooter_AllIn_Description" version="1">使用具有&lt;LSTag Tooltip="Proficiency"&gt;熟练项&lt;/LSTag&gt;的武器发动远程攻击时，其&lt;LSTag Tooltip="AttackRoll"&gt;攻击掷骰&lt;/LSTag&gt;会受到+[1]增值，且额外造成[2]伤害。</content>
+        <content contentuid="h0bf50988g8a65g40c1ga9e1g2ad5b6387678" version="1">你的&lt;LSTag Tooltip="RangedWeaponAttack"&gt;远程武器攻击&lt;/LSTag&gt;不再受到&lt;LSTag Tooltip="HighGroundRules"&gt;高地规则&lt;/LSTag&gt;的减值惩罚。&lt;br&gt;&lt;br&gt;使用具备&lt;LSTag Tooltip="Proficiency"&gt;熟练项&lt;/LSTag&gt;的武器发动远程攻击时，其&lt;LSTag Tooltip="AttackRoll"&gt;攻击掷骰&lt;/LSTag&gt;受到+5增值，且会额外造成10点伤害。(此能力可以自由开关)</content>
+        <!-- 凶蛮打手 -->
+        <content contentuid="h54cff516gccacg4efagb371gd6ac9e923a9e" version="1">发动攻击时，进行两次伤害掷骰并取最高结果。。</content>
+        <content contentuid="hb678b565g086fg415eg80dcg71905c52c9e5" version="1">发动攻击时，进行两次伤害掷骰并取最高结果。</content>
+        <content contentuid="FB_SavageAttacker_Description" version="1">发动攻击时，进行两次伤害掷骰并取最高结果。</content>
+</contentList>

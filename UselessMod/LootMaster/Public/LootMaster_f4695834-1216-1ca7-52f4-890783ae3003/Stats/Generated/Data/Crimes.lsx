@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<save>
+    <version major="4" minor="7" revision="1" build="3"/>
+    <region id="Crime">
+        <node id="root">
+            <children>
+                <node id="Crime">
+                    <attribute id="Audible" type="uint8" value="0"/>
+                    <attribute id="AudibleRange" type="float" value="2"/>
+                    <attribute id="CanMergeConfrontation" type="uint8" value="0"/>
+                    <attribute id="Continuous" type="uint8" value="0"/>
+                    <attribute id="CreatesCrimescene" type="uint8" value="0"/>
+                    <attribute id="CrimeType" type="LSString" value="Steal_NoCrimescene"/>
+                    <attribute id="DetectionRange" type="float" value="2"/>
+                    <attribute id="Lifetime" type="float" value="4"/>
+                    <attribute id="Parent" type="FixedString" value="Steal"/>
+                    <attribute id="TensionWeight" type="int32" value="2"/>
+                    <children>
+                        <node id="CrimeAction">
+                            <attribute id="InvestigationKind" type="uint8" value="1"/>
+                            <attribute id="Tension" type="uint8" value="1"/>
+                        </node>
+                    </children>
+                </node>
+                <node id="Crime">
+                    <attribute id="Audible" type="uint8" value="0"/>
+                    <attribute id="AudibleRange" type="float" value="2"/>
+                    <attribute id="CanMergeConfrontation" type="uint8" value="0"/>
+                    <attribute id="Continuous" type="uint8" value="0"/>
+                    <attribute id="CreatesCrimescene" type="uint8" value="0"/>
+                    <attribute id="CrimeType" type="LSString" value="Steal"/>
+                    <attribute id="DetectionRange" type="float" value="2"/>
+                    <attribute id="InterrogateDialog" type="LSString" value="GEB_Interrogation_Steal_d2280b94-7dce-8760-2eb0-fb26c1f8c9a2"/>
+                    <attribute id="Lifetime" type="float" value="4"/>
+                    <attribute id="MaxInvestigators" type="int32" value="3"/>
+                    <attribute id="TensionWeight" type="int32" value="2"/>
+                    <children>
+                        <node id="CrimeAction">
+                            <attribute id="Dialog" type="LSString" value="GEB_Warning_Theft_48c25844-2790-a97a-3d61-2acfb856856a"/>
+                            <attribute id="InvestigationKind" type="uint8" value="1"/>
+                            <attribute id="NoticedAD" type="LSString" value="GEB_AD_Noticed_Theft_c4eb12b3-e5c5-2470-ff12-6671b5ca4bf2"/>
+                            <attribute id="PrimarySensibleAction" type="FixedString" value="CRIME_OsirisReaction"/>
+                            <attribute id="Priority" type="int32" value="100"/>
+                            <attribute id="ReactionCategory_Tag" type="FixedString" value="NOT_MESSING_AROUND"/>
+                            <attribute id="SecondarySensibleAction" type="FixedString" value="CRIME_Draw"/>
+                            <attribute id="Tension" type="uint8" value="1"/>
+                            <attribute id="VictimReaction" type="FixedString" value="CRIME_OsirisReaction"/>
+                            <children>
+                                <node id="ExcludedVictimRelations">
+                                    <children>
+                                        <node id="Relation">
+                                            <attribute id="RelationObject" type="uint8" value="2"/>
+                                        </node>
+                                        <node id="Relation">
+                                            <attribute id="RelationObject" type="uint8" value="3"/>
+                                        </node>
+                                    </children>
+                                </node>
+                                <node id="TargetDialogueFlags">
+                                    <children>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="3"/>
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                        <node id="Properties">
+                            <children>
+                                <node id="Property">
+                                    <attribute id="Properties" type="guid" value="b94687a0-8ccd-49ab-a5ae-858daec0b674"/>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+                <node id="Crime">
+                    <attribute id="Audible" type="uint8" value="0"/>
+                    <attribute id="AudibleRange" type="float" value="2"/>
+                    <attribute id="CanMergeConfrontation" type="uint8" value="0"/>
+                    <attribute id="Continuous" type="uint8" value="0"/>
+                    <attribute id="CreatesCrimescene" type="uint8" value="0"/>
+                    <attribute id="CrimeType" type="LSString" value="LootOwnedCorpse"/>
+                    <attribute id="DetectionRange" type="float" value="2"/>
+                    <attribute id="Lifetime" type="float" value="4"/>
+                    <attribute id="Parent" type="FixedString" value="UseForbiddenItem"/>
+                    <attribute id="TensionWeight" type="int32" value="2"/>
+                    <children>
+                        <node id="CrimeAction">
+                            <attribute id="Dialog" type="LSString" value="GEB_AD_Noticed_SummonLootingCorpse_8982a18c-b375-0245-9f2d-eeed4777f642"/>
+                            <attribute id="InvestigationKind" type="uint8" value="1"/>
+                            <attribute id="Parent" type="FixedString" value="NOT_MESSING_AROUND"/>
+                            <attribute id="PrimarySensibleAction" type="FixedString" value="CRIME_AttackWithOptionalAD"/>
+                            <attribute id="ReactionCategory_Tag" type="FixedString" value="NOT_MESSING_AROUND"/>
+                            <attribute id="StopsAndInterruptsCrimes" type="uint8" value="1"/>
+                            <attribute id="Tension" type="uint8" value="1"/>
+                            <attribute id="VictimReaction" type="FixedString" value="CRIME_AttackWithOptionalAD"/>
+                            <children>
+                                <node id="TargetDialogueFlags">
+                                    <children>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="0"/>
+                                        </node>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="1"/>
+                                        </node>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="2"/>
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+                <node id="Crime">
+                    <attribute id="Audible" type="uint8" value="0"/>
+                    <attribute id="AudibleRange" type="float" value="2"/>
+                    <attribute id="CanMergeConfrontation" type="uint8" value="0"/>
+                    <attribute id="Continuous" type="uint8" value="0"/>
+                    <attribute id="CreatesCrimescene" type="uint8" value="0"/>
+                    <attribute id="CrimeType" type="LSString" value="SneakLootOwnedCorpse"/>
+                    <attribute id="DetectionRange" type="float" value="2"/>
+                    <attribute id="Lifetime" type="float" value="4"/>
+                    <attribute id="Parent" type="FixedString" value="SneakUseForbiddenItem"/>
+                    <attribute id="TensionWeight" type="int32" value="2"/>
+                    <children>
+                        <node id="CrimeAction">
+                            <attribute id="InvestigationKind" type="uint8" value="1"/>
+                            <attribute id="Tension" type="uint8" value="1"/>
+                        </node>
+                    </children>
+                </node>
+                <node id="Crime">
+                    <attribute id="Audible" type="uint8" value="0"/>
+                    <attribute id="AudibleRange" type="float" value="2"/>
+                    <attribute id="CanMergeConfrontation" type="uint8" value="0"/>
+                    <attribute id="Continuous" type="uint8" value="0"/>
+                    <attribute id="CreatesCrimescene" type="uint8" value="0"/>
+                    <attribute id="CrimeType" type="LSString" value="SneakLockpicking"/>
+                    <attribute id="DetectionRange" type="float" value="2"/>
+                    <attribute id="Lifetime" type="float" value="4"/>
+                    <attribute id="Parent" type="FixedString" value="Lockpicking"/>
+                    <attribute id="TensionWeight" type="int32" value="2"/>
+                    <children>
+                        <node id="CrimeAction">
+                            <attribute id="InvestigationKind" type="uint8" value="1"/>
+                            <attribute id="Tension" type="uint8" value="1"/>
+                        </node>
+                    </children>
+                </node>
+                <node id="Crime">
+                    <attribute id="Audible" type="uint8" value="0"/>
+                    <attribute id="AudibleRange" type="float" value="2"/>
+                    <attribute id="CanMergeConfrontation" type="uint8" value="0"/>
+                    <attribute id="Continuous" type="uint8" value="0"/>
+                    <attribute id="CreatesCrimescene" type="uint8" value="0"/>
+                    <attribute id="CrimeType" type="LSString" value="DisarmingTrap"/>
+                    <attribute id="DetectionRange" type="float" value="2"/>
+                    <attribute id="InterrogateDialog" type="LSString" value="GEB_Interrogation_DisarmingTrap_9cb6c541-a4b5-be88-208a-966f84278b99"/>
+                    <attribute id="Lifetime" type="float" value="4"/>
+                    <attribute id="Parent" type="FixedString" value="Lockpicking"/>
+                    <attribute id="TensionWeight" type="int32" value="2"/>
+                    <children>
+                        <node id="CrimeAction">
+                            <attribute id="Dialog" type="LSString" value="GEB_AD_Noticed_SummonMoveItem_c2d7062a-f11a-b331-083f-717ffc8bda4c"/>
+                            <attribute id="InvestigationKind" type="uint8" value="1"/>
+                            <attribute id="Parent" type="FixedString" value="NOT_MESSING_AROUND"/>
+                            <attribute id="ReactionCategory_Tag" type="FixedString" value="NOT_MESSING_AROUND"/>
+                            <attribute id="StopsAndInterruptsCrimes" type="uint8" value="1"/>
+                            <attribute id="Tension" type="uint8" value="1"/>
+                            <children>
+                                <node id="TargetDialogueFlags">
+                                    <children>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="0"/>
+                                        </node>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="1"/>
+                                        </node>
+                                        <node id="DisturbanceDialogueCapability">
+                                            <attribute id="DisturbanceDialogueCapabilityObject" type="uint8" value="2"/>
+                                        </node>
+                                    </children>
+                                </node>
+                            </children>
+                        </node>
+                    </children>
+                </node>
+            </children>
+        </node>
+    </region>
+</save>
