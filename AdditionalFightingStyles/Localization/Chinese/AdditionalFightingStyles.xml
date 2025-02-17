@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <contentList>
 	<content contentuid="hf3039b1612egb5aea1822a40bg619c03g8g7" version="1">拦截</content>
 	<content contentuid="h43091541gbbfd0g01ab7049afdbcb9157f61" version="1">当一个敌人攻击距离你[1]的另一盟友时，减少那次伤害1d10 + 你的&lt;LSTag Tooltip="ProficiencyBonus"&gt;熟练加值&lt;/LSTag&gt;。你必须看到攻击者。</content>

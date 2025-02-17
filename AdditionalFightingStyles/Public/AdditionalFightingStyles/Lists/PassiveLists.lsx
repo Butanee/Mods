@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<save>
+    <version major="4" minor="0" revision="9" build="307"/>
+    <region id="PassiveLists">
+        <node id="root">
+            <children>
+                <node id="PassiveList"> Fighter Fighting Styles
+                    <attribute id="Passives" type="LSString" value="FightingStyle_Archery,FightingStyle_BlindFighting,FightingStyle_CloseQuartersShooter,FightingStyle_Defense,FightingStyle_Dueling,FightingStyle_GreatWeaponFighting,FightingStyle_Interception,FightingStyle_Mariner,FightingStyle_Protection,FightingStyle_SuperiorTechnique,FightingStyle_ThrownWeaponFighting,FightingStyle_TunnelFighter,FightingStyle_TwoWeaponFighting,FightingStyle_UnarmedFighting"/>
+                    <attribute id="UUID" type="guid" value="da3203d8-750a-4de1-b8eb-1eccfccddf46"/>
+                </node>
+                <node id="PassiveList"> Ranger Fighting Styles
+                    <attribute id="Passives" type="LSString" value="FightingStyle_Archery,FightingStyle_BlindFighting,FightingStyle_CloseQuartersShooter,FightingStyle_Defense,FightingStyle_DruidicWarrior,FightingStyle_Dueling,FightingStyle_Interception,FightingStyle_Mariner,FightingStyle_ThrownWeaponFighting,FightingStyle_TunnelFighter,FightingStyle_TwoWeaponFighting,FightingStyle_UnarmedFighting"/>
+                    <attribute id="UUID" type="guid" value="a0bdb113-1cce-45ac-94fb-72d4c3f207e9"/>
+                </node>
+                <node id="PassiveList"> Paladin Fighting Styles
+                    <attribute id="Passives" type="LSString" value="FightingStyle_BlessedWarrior,FightingStyle_BlindFighting,FightingStyle_CloseQuartersShooter,FightingStyle_Defense,FightingStyle_Dueling,FightingStyle_GreatWeaponFighting,FightingStyle_Interception,FightingStyle_Mariner,FightingStyle_Protection,FightingStyle_ThrownWeaponFighting,FightingStyle_TunnelFighter,FightingStyle_UnarmedFighting"/>
+                    <attribute id="UUID" type="guid" value="f8ebba38-932a-4c64-ae55-3df23e2f60fa"/>
+                </node>
+            </children>
+        </node>
+    </region>
+</save>

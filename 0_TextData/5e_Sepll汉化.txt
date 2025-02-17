@@ -1,0 +1,97 @@
+戏法Cantrips
+
+轰雷剑Booming Blade
+控火术Control Flames
+创建篝火Create Bonfire
+德鲁伊伎俩Druidcraft
+霜噬Frost Bite
+可被翠炎剑的跳跃火焰攻击Green-Flame Blade
+舞风Gust
+闪电牵引Lightning Lure
+魔石术: 投掷Magic Stone
+心灵之楔Mind Sliver
+塑土术Mold Earth
+魔法伎俩Prestidigitation
+原初蛮击Primal Savagery
+削弱芒刺Sapping Sting
+剑刃爆发Sword Burst
+鸣雷破Thunderclap
+致死者Toll the Dead
+亡者丧钟Vicious Mockery
+光耀祷词Word of Radiance
+
+
+一级法术
+吸收元素Absorb Elements
+兽之联结Beast Bond
+造成恐惧Cause Fear
+侦测善恶Detect Evil and Good
+侦测魔法Detect Magic
+地动Earth Tremor
+冷冻一指Frost Fingers
+灵敏之赐Gift of Alacrity
+扩大重力Magnify Gravity
+塔莎酸蚀酿Caustic Brew
+隐形仆役Unseen Servant
+西风打击Zephyr Strike
+
+
+二级法术
+阿迦纳萨喷火术Aganazzar's Scorcher
+借鉴才学: 求生Borrowed Knowledge
+不灭明焰Continual Flame
+龙息术: 强酸Dragon's Breath - 在像魔宠和其他召唤物上使用时，动画和特效不起作用。另一方面，无法使用施法者的能力修正来使用它，因为它会自动默认为使用它的非召唤生物。
+尘土恶魔Dust Devil
+魔宠群Flock of Familiars
+命运宠儿Fortune's Favor - 由于无法实现类似于优势/劣势的东西，而实际上却不是其中任何一个，因此该法术会为其各自的掷骰提供+4加值或-4惩罚
+通过你的治愈之灵治疗一个生物Healing Spirit
+动力短行Kinetic Jaunt
+麦克斯米利安的地之攫Maximilian's Earthen Grasp
+心灵尖刺Mind Spike
+雾凇霜缚Rime's Binding Ice
+幽影刃Shadow Blade
+魔法圈套Snare
+史尼洛雪球群Snowball Storm
+野兽召唤术Summon Beast
+涡旋翘曲Vortex Warp
+守护之风Warding Wind
+靡叶生华Wither and Bloom
+
+
+三级法术
+阿莎德隆奔行Ashardalon's Stride
+假寐术Catnap
+造粮术Create Food and Water
+敌群环绕Enemies Abound
+土石喷发Erupting Earth
+火箭Flame Arrows
+智能壁垒Intellect Fortress
+马友夫微流星Minute Meteors
+励志演讲Motivational Speech
+回避侦测Nondetection
+脉冲波动Pulse Wave
+魂灵环绕Spirit Shroud
+暗影衍体召唤术Summon Shadowspawn
+雷霆步Thunder Step
+水上行走Water Walk
+
+
+四级法术﻿
+魅惑怪物Charm Monster
+引力裂沟Gravity Sinkhole
+自然守卫Guardian of Nature
+劳洛希姆心灵长枪Raulothim's Psychic Lance
+
+
+五级法术﻿
+万箭齐发Conjure Volley
+渺远步Far Step
+神圣武器Holy Weapon
+负能量洪流Negative Energy Flood
+死者复活Raise Dead
+拉瑞心灵联结Rary's Telepathic Bond
+授予技能Skill Empowerment
+钢风斩Steel Wind Strike
+龙类精魂召唤术Summon Draconic Spirit
+突触静止Synaptic Static
+时流刹转Temporal Shunt - 这主要是一种类似于反击法术之类的反应法术，但需要你实际使用它来对自己施加“增益”，这会转化为由于实施问题而弹出的反应。以后有机会再来参观。
